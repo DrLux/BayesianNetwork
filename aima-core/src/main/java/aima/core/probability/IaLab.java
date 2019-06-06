@@ -7,6 +7,7 @@ import aima.core.probability.bayes.impl.*;
 import aima.core.probability.bayes.impl.*;
 import aima.core.probability.bayes.model.*;
 import aima.core.probability.proposition.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,6 @@ import java.util.List;
  */
 public class IaLab {
     public static void main(String [ ] args){
-        System.out.println("hello world");
         IaLab ialab = new IaLab();
         ialab.doStuff();
     }
@@ -53,14 +53,19 @@ public class IaLab {
     */
     public void doStuff(){
         BayesianNetwork earthyNet = BayesNetExampleFactory.constructBurglaryAlarmNetwork();
-        FiniteBayesModel model = new FiniteBayesModel(earthyNet, new EliminationAsk());
         List<RandomVariable> nodes = earthyNet.getVariablesInTopologicalOrder();
+        MPE mpe = new MPE(earthyNet);
         
         AssignmentProposition jonhcall = customAssignment(nodes, "JohnCalls", true);
         AssignmentProposition marycall = customAssignment(nodes, "MaryCalls", true);
         AssignmentProposition burglary = customAssignment(nodes, "Burglary", true);
-        ConjunctiveProposition johnANDmary = new ConjunctiveProposition(marycall, jonhcall);
         
-        System.out.println("The posterior distribution for Burglary given jonhcall and marycall is "+ model.posterior(burglary,johnANDmary));
+        List<AssignmentProposition> evidences = new ArrayList<>();;
+        evidences.add(jonhcall);
+        evidences.add(marycall);
+        
+        mpe.calculateMPE(evidences);
+        
+        //model.mpe(johnANDmary);
     }
 }

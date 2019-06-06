@@ -5,6 +5,7 @@ import java.util.Set;
 import aima.core.probability.ProbabilityDistribution;
 import aima.core.probability.RandomVariable;
 import aima.core.probability.proposition.AssignmentProposition;
+import aima.core.probability.util.ProbabilityTable;
 
 /**
  * A conditional probability distribution on a RandomVariable X<sub>i</sub>:<br>
@@ -140,4 +141,6 @@ public interface ConditionalProbabilityDistribution {
 	 */
 	Object getSample(double probabilityChoice,
 			AssignmentProposition... parentValues);
+
+    public ProbabilityTable getData();
 }

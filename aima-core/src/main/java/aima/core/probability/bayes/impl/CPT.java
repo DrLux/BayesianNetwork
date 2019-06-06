@@ -25,7 +25,7 @@ import aima.core.probability.util.ProbabilityTable;
 public class CPT implements ConditionalProbabilityTable {
 	private RandomVariable on = null;
 	private LinkedHashSet<RandomVariable> parents = new LinkedHashSet<RandomVariable>();
-	private ProbabilityTable table = null;
+	public ProbabilityTable table = null;
 	private List<Object> onDomain = new ArrayList<Object>();
 
 	public CPT(RandomVariable on, double[] values,
@@ -49,7 +49,9 @@ public class CPT implements ConditionalProbabilityTable {
 	public double probabilityFor(final Object... values) {
 		return table.getValue(values);
 	}
-
+        
+    
+        
 	//
 	// START-ConditionalProbabilityDistribution
 
@@ -205,4 +207,9 @@ public class CPT implements ConditionalProbabilityTable {
 
 		table.iterateOverTable(di);
 	}
+
+    @Override
+    public ProbabilityTable getData() {
+        return this.table;
+    }
 }

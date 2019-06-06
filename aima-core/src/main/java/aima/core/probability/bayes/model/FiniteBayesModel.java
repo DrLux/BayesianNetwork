@@ -16,6 +16,9 @@ import aima.core.probability.proposition.ConjunctiveProposition;
 import aima.core.probability.proposition.Proposition;
 import aima.core.probability.util.ProbUtil;
 import aima.core.probability.util.ProbabilityTable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Very simple implementation of the FiniteProbabilityModel API using a Bayesian
@@ -71,29 +74,29 @@ public class FiniteBayesModel implements FiniteProbabilityModel {
 	}
 
 	public double prior(Proposition... phi) {
-		// Calculating the prior, therefore no relevant evidence
-		// just query over the scope of proposition phi in order
-		// to get a joint distribution for these
-		final Proposition conjunct = ProbUtil.constructConjunction(phi);
-		RandomVariable[] X = conjunct.getScope().toArray(
-				new RandomVariable[conjunct.getScope().size()]);
-		CategoricalDistribution d = bayesInference.ask(X,
-				new AssignmentProposition[0], bayesNet);
+            // Calculating the prior, therefore no relevant evidence
+            // just query over the scope of proposition phi in order
+            // to get a joint distribution for these
+            final Proposition conjunct = ProbUtil.constructConjunction(phi);
+            RandomVariable[] X = conjunct.getScope().toArray(
+                            new RandomVariable[conjunct.getScope().size()]);
+            CategoricalDistribution d = bayesInference.ask(X,
+                            new AssignmentProposition[0], bayesNet);
 
-		// Then calculate the probability of the propositions phi
-		// be seeing where they hold.
-		final double[] probSum = new double[1];
-		CategoricalDistribution.Iterator di = new CategoricalDistribution.Iterator() {
-			public void iterate(Map<RandomVariable, Object> possibleWorld,
-					double probability) {
-				if (conjunct.holds(possibleWorld)) {
-					probSum[0] += probability;
-				}
-			}
-		};
-		d.iterateOver(di);
+            // Then calculate the probability of the propositions phi
+            // be seeing where they hold.
+            final double[] probSum = new double[1];
+            CategoricalDistribution.Iterator di = new CategoricalDistribution.Iterator() {
+                    public void iterate(Map<RandomVariable, Object> possibleWorld,
+                                    double probability) {
+                            if (conjunct.holds(possibleWorld)) {
+                                    probSum[0] += probability;
+                            }
+                    }
+            };
+            d.iterateOver(di);
 
-		return probSum[0];
+            return probSum[0];
 	}
 
 	public double posterior(Proposition phi, Proposition... evidence) {
@@ -204,7 +207,6 @@ public class FiniteBayesModel implements FiniteProbabilityModel {
 		}
 		return d;
 	}
-
-	// END-FiniteProbabilityModel
+        	// END-FiniteProbabilityModel
 	//
 }

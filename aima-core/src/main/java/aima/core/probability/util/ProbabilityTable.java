@@ -54,6 +54,8 @@ public class ProbabilityTable implements CategoricalDistribution, Factor {
 		void iterate(Map<RandomVariable, Object> possibleAssignment,
 				double probability);
 	}
+        
+        
 
 	public ProbabilityTable(Collection<RandomVariable> vars) {
 		this(vars.toArray(new RandomVariable[vars.size()]));
@@ -100,6 +102,8 @@ public class ProbabilityTable implements CategoricalDistribution, Factor {
 	public Set<RandomVariable> getFor() {
 		return randomVarInfo.keySet();
 	}
+        
+        
 
 	@Override
 	public boolean contains(RandomVariable rv) {
