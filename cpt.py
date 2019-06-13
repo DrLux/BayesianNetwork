@@ -96,16 +96,17 @@ class CPT:
 	#Se vett_vars è nullo cerco l' ass del nodo precedente, ovvero l' ultimo in lista
 	def get_ass_for_vars(self,parents_vars):
 		target_ass = []
-		target_vals = list(parents_vars) #se il nodo ha parenti quelli sono i suoi target, altrimenti inizializzera con array vuoto
+		target_vars = [] #se il nodo ha parenti quelli sono i suoi target, altrimenti inizializzera con array vuoto
 		if (parents_vars):#se il nodo attuale ha parents
 			for entry in self.assignments:
 				for v in parents_vars:
 					if v in entry.vars:
+						target_vars.append(v)
 						target_ass.append(entry.get_var_ass(v))
 		else: #se non li ha usa l' ultimo nodo visto finora
 			target_vals =  self.assignments[-1].vars
 			target_ass = self.assignments[-1].ass
-		return target_vals, target_ass
+		return target_vars, target_ass
 
 class Assignment:
 	def __init__(self, vars, ass, val):

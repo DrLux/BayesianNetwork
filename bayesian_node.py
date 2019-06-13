@@ -23,26 +23,21 @@ class BayesNode:
 		print("domain: ", self.var.domain)
 		print("ctp: ", self.cpt.print())
 		print("parents: ", self.parents)
-		print("Maxed Cpt: ")
-		self.maxed_cpt.print()
+		self.maxed_cpt.print("Maxed Cpt")
 
 	 
 	def max_out(self):
 		if DEBUG:
-			print("cpt (prima del max_out)")
-			self.cpt.print()
+			self.cpt.print("cpt (prima del max_out)")
 		self.maxed_cpt = self.cpt.max_out(self.var.name)
 		if DEBUG:
-			print("maxed_cpt (dopo il max_out)")
-			self.maxed_cpt.print()
+			self.maxed_cpt.print("maxed_cpt (dopo il max_out)")
 		
 	def pointwise_product(self,maxed_node):
-		if DEBUG:
-			print("cpt prima del pointwise_product")
-			self.cpt.print()
+		if DEBUG:			
+			self.cpt.print("cpt prima del pointwise_product")
 			
 		self.cpt = self.cpt.pointwise_product(maxed_node.maxed_cpt) 
 
 		if DEBUG:
-			print("cpt dopo il pointwise_product")
-			self.cpt.print()
+			self.cpt.print("cpt dopo il pointwise_product")
