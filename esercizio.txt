@@ -1,0 +1,243 @@
+B
+------
+T=0.01
+F=0.99
+
+E
+------
+T=0.02
+F=0.98
+
+A|B E
+-----
+T T T = 0.95
+T T F = 0.94
+T F T = 0.29
+T F F = 0.0001
+F T T = 0.05
+F T F = 0.06
+F F T = 0.71
+F F F = 0.999
+
+J|A
+---
+T T = 0.9
+T F = 0.05
+F T = 0.1
+F F = 0.95
+
+M|A
+---
+T T = 0.7
+T F = 0.01
+F T = 0.3
+F F = 0.99
+
+------------------------------------------
+
+Assegnamento evidenze
+
+J|A
+---
+T T = 0.9
+T F = 0.05
+F T = 0
+F F = 0
+
+M|A
+---
+T T = 0.7
+T F = 0.01
+F T = 0
+F F = 0
+
+------------------------------------------
+
+Maxing-out M from M|A
+
+
+M|A
+---
+T T = 0.7  (max per A=T)
+T F = 0.01 (max per A=F)
+F T = 0
+F F = 0
+
+Tabella risultante
+
+A_m
+--
+T = 0.7
+F = 0.01
+
+Aggiorno gli assegnamenti
+
+assign= [
+  [A=T] -> [M=T] with (0.7)],
+  [A=F] -> [M=T] with (0.01)]]
+
+-------------------------------------------
+Moltiplico A_m per J|A
+
+J|A
+---
+T T = 0.9
+T F = 0.05
+F T = 0
+F F = 0
+  
+
+J|A x A_m
+---
+T T = 0.9*0.7  = 0.63
+T F = 0.05*0.01  = 0.005
+F T = 0*0.7  = 0
+F F = 0*0.01  = 0
+
+
+-------------------------------------------
+Maxing-out J from J|A x A_m
+
+J|A x A_m
+---
+T T = 0.63 (max per A=T)
+T F = 0.005(max per A=F)
+F T = 0
+F F = 0
+
+
+Aggiorno gli assegnamenti
+
+assign= [
+  [A=T] -> [M=T,J=T] with (0.63),
+  [A=F] -> [M=T,J=T] with (0.005)]
+
+Tabella risultante
+
+A_j
+T = 0.63
+F = 0.005
+
+
+--------------------------------------------
+Moltiplico A_j per A|BE
+
+A|B E
+-----
+T T T = 0.95
+T T F = 0.94
+T F T = 0.29
+T F F = 0.001
+F T T = 0.05
+F T F = 0.06
+F F T = 0.71
+F F F = 0.999
+
+A|B E x A_j
+----
+T T T = 0.95*0.63  = 0.5985
+T T F = 0.94*0.63  = 0.5922
+T F T = 0.29*0.63  = 0.1827
+T F F = 0.0001*0.63  = 0.000063
+F T T = 0.05*0.005  = 0.00025
+F T F = 0.06*0.005  = 0.0003
+F F T = 0.71*0.005  = 0.00355
+F F F = 0.999*0.005  = 0.004995
+
+-------------------------------------------
+Maxing-out A from A|B E x A_j
+
+A|B E x A_j
+-----
+T T T =  0.5985 (max per B=T E=T)
+T T F =  0.5922 (max per B=T E=F)
+T F T =  0.1827  (max per B=F E=T)
+T F F =  0.000063
+F T T =  0.00025
+F T F =  0.0003
+F F T =  0.00355
+F F F =  0.004995 (max per B=F E=F)
+
+
+Aggiorno gli assegnamenti
+
+assign = [
+  [B=T, E=T] -> [A=T] -> [M=T,J=T] with (0.5985)
+  [B=T, E=F] -> [A=T] -> [M=T,J=T] with (0.5922)
+  [B=F, E=T] -> [A=T] -> [M=T,J=T] with (0.1827)
+  [B=F, E=F] -> [A=F] -> [M=T,J=T] with (0.004995)]
+
+Tabella risultante
+
+(BE)_a
+-------
+T T = 0.5985
+T F = 0.5922
+F T = 0.1827
+F F = 0.004995
+
+--------------------------------------------
+Moltiplico (BE)_a per E
+
+E
+------
+T=0.02
+F=0.98
+
+E x (BE)_a (B sta a sinistra e E sta a destra)
+T T = 0.02*0.5985 = 0.01197
+T F = 0.98*0.5922 = 0.580356
+F T = 0.02*0.1827 = 0.003654
+F F = 0.98*0.004995 = 0.0048951
+
+-------------------------------------------
+Maxing-out E from E x (BE)_a
+
+E x (BE)_a (B sta a sinistra e E sta a destra)
+T T  = 0.01197 
+T F  = 0.580356 (max per B=T)
+F T  = 0.003654 
+F F  = 0.0048951(max per B=F)
+
+
+Aggiorno gli assegnamenti
+
+assign = [
+  [B=T] -> [E=F] -> [B=T, E=F] -> [A=T] -> [M=T,J=T] with (0.580356)
+  [B=F] -> [E=F] -> [B=F, E=F] -> [A=F] -> [M=T,J=T] with (0.0048951)]
+
+
+Tabella risultante
+
+B_e
+-------
+T = 0.580356
+F = 0.0048951
+
+--------------------------------------------
+Moltiplico B_e per B
+
+B
+------
+T=0.01
+F=0.99
+
+B x B_e
+---
+T=0.01*0.580356 = 0.00580356
+F=0.99*0.0048951= 0.004846149
+
+------
+Arg-max di B
+
+B x B_e
+---
+T = 0.00580356 (arg max)
+F = 0.004846149
+
+Aggiorno 
+
+Aggiorno gli assegnamenti
+
+assign = [
+  [B=T] -> [E=F] -> [B=T, E=F] -> [A=T] -> [M=T,J=T] with (0.00580356)]
