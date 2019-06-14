@@ -8,7 +8,6 @@ class BayesNet:
 	def print(self):
 		for node in self.nodes:
 			node.print()
-		
 
 	def get_node(self, name):
 		for node in self.nodes:
