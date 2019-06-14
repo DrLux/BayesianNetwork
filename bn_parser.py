@@ -1,179 +1,68 @@
 from bayesian_network import *
 
+#data una variabile e una lista di variabili restituisce l' index-esimo valore del dominio nella var trovata nella lista delle var
+def get_var_domain_in_index(target_var,index,netVariables):
+	for var in netVariables:
+		if target_var[0] == var.name:
+			return [var.domain[index]]
 
-'''a = BayesVar('a',['young','adult','old'])
-s = BayesVar('s',['m','f']) 
-e = BayesVar('e',['high','uni'])
-o = BayesVar('o',['emp','self']) 
-r = BayesVar('r',['small','big']) 
-t = BayesVar('t',['car','train','other']) 
+def get_var_from_name(target_var,netVariables):
+	for var in netVariables:
+		if target_var == var.name:
+			return var
 
-netVariables = [a,s,e,o,r,t]
+def load_net(path):
+	with open(path, 'r') as file:
+		lineList = file.readlines()
+		netVariables = []
+		netNodes = []
+		for i in range(len(lineList)): #itera sulle righe del file
+			if 'variable' in lineList[i]:
 
-cpt_a = dict()
-cpt_a['young'] = 0.3
-cpt_a['adult'] = 0.5
-cpt_a['old'] = 0.2
-node_a = BayesNode(a,[],cpt_a)
+				#parsing del nome della variabile
+				name_var = lineList[i].split()[1] #la seconda parola della riga contenente "variable" è il nome della variabile
+				
+				next_line = lineList[i+1] 
+				domain = next_line[next_line.index('{')+1:next_line.index('}')]
+				domain = domain.replace(',', '').split()
+				assert(len(domain) == int(next_line.split()[3]))
+				
+				#creazione oggetto
+				netVariables.append(BayesVar(name_var,domain))
+			if 'probability' in lineList[i]:
+				
+				#inizializzazione .split(',')
+				line = lineList[i].replace(',', '').split()
 
-cpt_s = dict()
-cpt_s['m'] = 0.6
-cpt_s['f'] = 0.4
-node_s = BayesNode(s,[],cpt_s)
+				#parsing del nome della variabile
+				name_var = [line[2]] #la 3 parola contiene il nome della variabile
+				parents_name = line[4:line.index(')')] #se ci sono parents le trovo dal 4 token fino alla chiusura parentesi
 
-cpt_eas = dict()
-cpt_eas['high','young','m'] = 0.75
-cpt_eas['high','adult','m'] = 0.72
-cpt_eas['high','old','m'] = 0.88
-cpt_eas['high','young','f'] = 0.64
-cpt_eas['high','adult','f'] = 0.7
-cpt_eas['high','old','f'] = 0.9
-cpt_eas['uni','young','m'] = 0.25
-cpt_eas['uni','adult','m'] = 0.28
-cpt_eas['uni','old','m'] = 0.12
-cpt_eas['uni','young','f'] = 0.36
-cpt_eas['uni','adult','f'] = 0.3
-cpt_eas['uni','old','f'] = 0.1
-eas = BayesNode(e,[a,s],cpt_eas)
+				#parsing della CPT
+				cpt = CPT()
+				vars_Ass = name_var + parents_name
+				new_i = i + 1
+				next_line = lineList[new_i]
+				while next_line[0] != "}":
+					if (next_line[2] == 't'): # se la riga inizia con "table" si tratta di una variabile singola
+						next_line = next_line.replace(',', '')
+						next_line = next_line.replace(';', '').split()
+						for new_j in range(1,len(next_line)): #per ogni parola nella riga
+							ass = get_var_domain_in_index(name_var,new_j-1,netVariables)
+							cpt.add(Assignment(vars_Ass,ass,float(next_line[new_j])))
+					else: #cpt_eas.add(Assignment(['e','a','s'],['high','young','m'],0.75))
+						next_line = next_line.replace(',', '')
+						next_line = next_line.replace(';', '')
+						ass = next_line[next_line.index('(')+1:next_line.index(')')].split()
+						val = next_line[next_line.index(')')+1:].split() 
+						val = list(map(float, val)) #cast da string a float
+						for x in range(len(val)):
+							cpt.add(Assignment(vars_Ass,get_var_domain_in_index(name_var,x,netVariables) + ass,val[x]))
 
-cpt_oe = dict()
-cpt_oe['emp','high'] = 0.96
-cpt_oe['emp','uni'] = 0.92
-cpt_oe['self','high'] = 0.04
-cpt_oe['self','uni'] = 0.08
-oe = BayesNode(o,[e],cpt_oe)
-
-cpt_re = dict()
-cpt_re['small','high'] = 0.25
-cpt_re['small','uni'] = 0.2
-cpt_re['big','high'] = 0.75
-cpt_re['big','uni'] = 0.08
-re = BayesNode(r,[e],cpt_re)
-
-
-cpt_tor = dict()
-cpt_tor['car','emp','small'] = 0.48
-cpt_tor['car','self','small'] = 0.56
-cpt_tor['car','emp','big'] = 0.58
-cpt_tor['car','self','big'] = 0.70
-
-cpt_tor['train','emp','small'] = 0.42
-cpt_tor['train','self','small'] = 0.36
-cpt_tor['train','emp','big'] = 0.24
-cpt_tor['train','self','big'] = 0.21
-
-cpt_tor['other','emp','small'] = 0.10
-cpt_tor['other','self','small'] = 0.08
-cpt_tor['other','emp','big'] = 0.18
-cpt_tor['other','self','big'] = 0.09
-tor = BayesNode(t,[o,r],cpt_tor)
-
-netNodes = [node_a, node_s, eas, oe, re, tor]
-
-bn = BayesNet(netVariables,netNodes)'''
-
-'''
-b = BayesVar('b',['t','f'])
-e = BayesVar('e',['t','f']) 
-a = BayesVar('a',['t','f'])
-j = BayesVar('j',['t','f']) 
-m = BayesVar('m',['t','f']) 
-
-netVariables = [b,e,a,j,m]
-
-cpt_b = dict()
-#cpt_b[b] = []
-cpt_b['t'] = 0.01
-cpt_b['f'] = 0.99
-node_b = BayesNode(b,[],cpt_b)
-
-cpt_e = dict()
-#cpt_e[e] = []
-cpt_e['t'] = 0.02
-cpt_e['f'] = 0.98
-node_e = BayesNode(e,[],cpt_e)
-
-cpt_aeb = dict()
-#cpt_aeb[a] = [e,b]
-cpt_aeb['t','t','t'] = 0.95
-cpt_aeb['t','t','f'] = 0.94
-cpt_aeb['t','f','t'] = 0.29
-cpt_aeb['t','f','f'] = 0.001
-cpt_aeb['f','t','t'] = 0.05
-cpt_aeb['f','t','f'] = 0.06
-cpt_aeb['f','f','t'] = 0.71
-cpt_aeb['f','f','f'] = 0.999
-aeb = BayesNode(a,[e,b],cpt_aeb)
-
-
-cpt_ja = dict()
-#cpt_ja[j] = [a]
-cpt_ja['t','t'] = 0.9
-cpt_ja['t','f'] = 0.05
-cpt_ja['f','t'] = 0.1
-cpt_ja['f','f'] = 0.95
-ja = BayesNode(j,[a],cpt_ja)
-
-cpt_ma = dict()
-#cpt_ma[m] = [a]
-cpt_ma['t','t'] = 0.7
-cpt_ma['t','f'] = 0.01
-cpt_ma['f','t'] = 0.3
-cpt_ma['f','f'] = 0.99
-ma = BayesNode(m,[a],cpt_ma)
-
-
-
-netNodes = [node_b, node_e, aeb, ja, ma]
-
-bn = BayesNet(netVariables,netNodes)
-'''
-
-b = BayesVar('b',['t','f'])
-e = BayesVar('e',['t','f']) 
-a = BayesVar('a',['t','f'])
-j = BayesVar('j',['t','f']) 
-m = BayesVar('m',['t','f']) 
-
-netVariables = [b,e,a,j,m]
-
-cpt_b = CPT()
-cpt_b.add(Assignment(['b'],['t'],0.01))
-cpt_b.add(Assignment(['b'],['f'],0.99))
-node_b = BayesNode(b,[],cpt_b)
-
-cpt_e = CPT()
-cpt_e.add(Assignment(['e'],['t'],0.02))
-cpt_e.add(Assignment(['e'],['f'],0.98))
-node_e = BayesNode(e,[],cpt_e)
-
-
-cpt_aeb = CPT()
-cpt_aeb.add(Assignment(['a','b','e'],['t','t','t'],0.95))
-cpt_aeb.add(Assignment(['a','b','e'],['t','t','f'],0.94))
-cpt_aeb.add(Assignment(['a','b','e'],['t','f','t'],0.29))
-cpt_aeb.add(Assignment(['a','b','e'],['t','f','f'],0.001))
-cpt_aeb.add(Assignment(['a','b','e'],['f','t','t'],0.05))
-cpt_aeb.add(Assignment(['a','b','e'],['f','t','f'],0.06))
-cpt_aeb.add(Assignment(['a','b','e'],['f','f','t'],0.71))
-cpt_aeb.add(Assignment(['a','b','e'],['f','f','f'],0.999))
-aeb = BayesNode(a,['e','b'],cpt_aeb)
-
-
-cpt_ja = CPT()
-cpt_ja.add(Assignment(['j','a'],['t','t'],0.9))
-cpt_ja.add(Assignment(['j','a'],['t','f'],0.05))
-cpt_ja.add(Assignment(['j','a'],['f','t'],0.1))
-cpt_ja.add(Assignment(['j','a'],['f','f'],0.95))
-ja = BayesNode(j,['a'],cpt_ja)
-
-cpt_ma = CPT()
-cpt_ma.add(Assignment(['m','a'],['t','t'],0.7))
-cpt_ma.add(Assignment(['m','a'],['t','f'],0.01))
-cpt_ma.add(Assignment(['m','a'],['f','t'],0.3))
-cpt_ma.add(Assignment(['m','a'],['f','f'],0.99))
-ma = BayesNode(m,['a'],cpt_ma)
-
-netNodes = [node_b, node_e, aeb, ja, ma]
-
-bn = BayesNet(netVariables,netNodes)
+					new_i += 1
+					next_line = lineList[new_i]
+				netNodes.append(BayesNode(get_var_from_name(name_var[0],netVariables),parents_name,cpt))
+										
+		bn = BayesNet(netVariables,netNodes)
+		file.close()
+	return bn

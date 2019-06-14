@@ -1,10 +1,18 @@
 from bn_parser import *
 
-evidences = dict()
-evidences['b'] = 't' 
-#evidences['e'] = 't' 
-#evidences['a'] = 'f' 
-evidences['j'] = 't' 
-evidences['m'] = 'f' 
+# sito dove scaricare le reti: http://www.bnlearn.com/bnrepository/
 
-bn.mpe(evidences)
+
+network = load_net('survey.bif')
+
+#network.print()
+
+evidences = dict()
+evidences['A'] = 'adult' 
+#evidences['S'] = 'M' 
+evidences['E'] = 'high' 
+#evidences['O'] = 'emp' 
+#evidences['R'] = 'big' 
+evidences['T'] = 'train' 
+
+network.mpe(evidences)

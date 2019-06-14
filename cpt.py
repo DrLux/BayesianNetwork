@@ -29,9 +29,9 @@ class CPT:
 			new_vars = list(entry.vars) 
 			new_ass = list(entry.ass)
 			index_target = entry.vars.index(target)
-			#if len(new_vars) > 1: #il caso in cui la variabile da eliminare è l' unica rimasta fa eccezione
-			del new_vars[index_target]
-			del new_ass[index_target]#rimuove l' ass corrispondende alla variabile target (by index)
+			if len(new_vars) > 1: #il caso in cui la variabile da eliminare è l' unica rimasta fa eccezione
+				del new_vars[index_target]
+				del new_ass[index_target]#rimuove l' ass corrispondende alla variabile target (by index)
 			if maxed_cpt.contains(new_vars,new_ass):
 				new_val = max(entry.val,maxed_cpt.get_value(new_vars,new_ass))
 				maxed_cpt.update(new_vars,new_ass, new_val)
@@ -59,7 +59,7 @@ class CPT:
 		new_cpt = CPT()
 		for entry in self.assignments:
 			for other_entry in other_cpt.assignments:
-				if entry.contains(other_entry.vars,other_entry.ass) or other_entry.contains(entry.vars,entry.ass): 
+				if entry.partial_contains(other_entry.vars,other_entry.ass) or other_entry.partial_contains(entry.vars,entry.ass): 
 					new_vars = list(entry.vars) #copio la lista non passo il puntatore
 					new_ass = list(entry.ass) #copio la lista non passo il puntatore
 					for i in range(len(other_entry.vars)):#aggiunge le var e i relativi ass dell' altro nodo
@@ -108,23 +108,42 @@ class CPT:
 			target_ass = self.assignments[-1].ass
 		return target_vars, target_ass
 
+	def best_value(self):
+		best_value = -1
+		for entry in self.assignments:
+			best_value = max(best_value, entry.val)
+		return best_value
+
 class Assignment:
 	def __init__(self, vars, ass, val):
 		self.vars = vars
 		self.ass = ass
 		self.val = val
 
-	def print(self):
-		print(self.vars, " = ", self.ass, " ->", self.val)
+	def print(self,message=""):
+		print(message, self.vars, " = ", self.ass, " ->", self.val)
+
+	#verifica (solo tra le variabili in comune tra quelle date e quelle di self.vars) che tutti i rispettivi ass coincidano con quelli delle rispettive variabili in self.ass
+	def partial_contains(self,vett_vars,vett_ass):
+		common_vars = list(set(vett_vars).intersection(self.vars))
+		#crea un vettore di booleani che all() mette tutti in and
+		return all([common_vars[i] in self.vars and self.ass[self.vars.index(common_vars[i])] == vett_ass[i] for i in range(len(common_vars))])
 
 	#per ogni var in vett_vars controlla che sia in self.vars e che il corrispondente ass coincida con quello in self.ass
 	def contains(self,vett_vars,vett_ass):
 		#crea un vettore di booleani che all() mette tutti in and
-		return all([vett_vars[i] in self.vars and self.ass[self.vars.index(vett_vars[i])] == vett_ass[i] for i in range(len(vett_vars))])
+		if vett_vars: 
+			return all([vett_vars[i] in self.vars and self.ass[self.vars.index(vett_vars[i])] == vett_ass[i] for i in range(len(vett_vars))])
+		else: #voglio solo vedere se in questa entry c'è un determinato assignments (senza rispettiva var)
+			return (vett_ass in self.ass) 
+
 
 	#la variabile passata è una singola var
-	def get_var_ass(self,var):
-		index_var = self.vars.index(var)
-		return self.ass[index_var]
+	def get_var_ass(self,var):		
+		if isinstance(self.ass, list):
+			index_var = self.vars.index(var)
+			return self.ass[index_var]
+		else:
+			return self.ass
 
 	 
