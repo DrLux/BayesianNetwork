@@ -37,15 +37,20 @@ class BayesNet:
 			maxed_node = node
 
 		current_best_value = node.maxed_cpt.best_value()
-		mpe_value = current_best_value
-		for node in self.nodes:
-			if history_cpt.assignments:
-				target_vars, target_ass = history_cpt.get_ass_for_vars(node.parents)
-				current_best_value = node.maxed_cpt.best_value_for_Ass(target_vars, target_ass) #l' ultimo Ass inserito (quello dell' iterazione precedente)
-			best_ass = node.cpt.get_var_ass_from_value(node.var.name,current_best_value)
-			history_cpt.add(Assignment(node.var.name, best_ass, current_best_value))
+		best_ass = node.cpt.get_var_ass_from_value(node.var.name,current_best_value)
+		print("current_best_value: ",current_best_value)
+		print("best_ass: ",best_ass)
+
+		'''current_best_value = node.maxed_cpt.best_value()
+								mpe_value = current_best_value
+								for node in self.nodes:
+									if history_cpt.assignments:
+										target_vars, target_ass = history_cpt.get_ass_for_vars(node.parents)
+										current_best_value = node.maxed_cpt.best_value_for_Ass(target_vars, target_ass) #l' ultimo Ass inserito (quello dell' iterazione precedente)
+									best_ass = node.cpt.get_var_ass_from_value(node.var.name,current_best_value)
+									history_cpt.add(Assignment(node.var.name, best_ass, current_best_value))'''
 		
-		print("Valore finale MPE: ", mpe_value)
+		#print("Valore finale MPE: ", mpe_value)
 		history_cpt.print("Best assignments")
 
 	def map(self,evidences,map_vars):

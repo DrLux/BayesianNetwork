@@ -45,23 +45,6 @@ class CPT:
 			new_cpt.add(Assignment(new_vars,ass,value))
 		return new_cpt
 
-	def old_max_out(self,target):
-		if DEBUG:
-			print("target max_out: ", target)
-		maxed_cpt = CPT()
-		for entry in self.assignments:
-			new_vars = list(entry.vars) 
-			new_ass = list(entry.ass)
-			index_target = entry.vars.index(target)
-			if len(new_vars) > 1: #il caso in cui la variabile da eliminare è l' unica rimasta fa eccezione
-				del new_vars[index_target]
-				del new_ass[index_target]#rimuove l' ass corrispondende alla variabile target (by index)
-			if maxed_cpt.contains(new_vars,new_ass):
-				new_val = max(entry.val,maxed_cpt.get_value(new_vars,new_ass))
-				maxed_cpt.update(new_vars,new_ass, new_val)
-			else:
-				maxed_cpt.add(Assignment(new_vars,new_ass, entry.val))
-		return maxed_cpt
 	
 	def contains(self,vett_vars,vett_ass):
 		print("Entato in cointains")
@@ -83,6 +66,23 @@ class CPT:
 				return entry.val
 
 	def pointwise_product(self,other_cpt):
+		new_cpt = CPT()
+		for entry in self.assignments:
+			for other_entry in other_cpt.assignments:
+				common_var = set(entry.vars).intersection(set(other_entry.vars))
+				if all([entry.ass[entry.vars.index(c_v)] == other_entry.ass[other_entry.vars.index(c_v)] for c_v in common_var]):
+					new_vars = list(entry.vars) #copio la lista non passo il puntatore
+					new_ass = list(entry.ass) #copio la lista non passo il puntatore
+					for i in range(len(other_entry.vars)):#aggiunge le var e i relativi ass dell' altro nodo
+						if other_entry.vars[i] not in new_vars:
+							new_vars.append(other_entry.vars[i])
+							new_ass.append(other_entry.ass[i])
+					if DEBUG:
+						print(other_entry.val," * ", entry.val, " = ", other_entry.val*entry.val)
+					new_cpt.add(Assignment(new_vars,new_ass,(other_entry.val*entry.val)))	
+		return new_cpt
+
+	def old_pointwise_product(self,other_cpt):
 		new_cpt = CPT()
 		for entry in self.assignments:
 			for other_entry in other_cpt.assignments:
@@ -142,20 +142,22 @@ class CPT:
 		return best_value
 
 	def sum_out(self,target):
-		maxed_cpt = CPT()
+		if DEBUG:
+			print("target max_out: ", target)
+		dict_maxed_cpt = dict()
 		for entry in self.assignments:
-			new_vars = list(entry.vars) 
 			new_ass = list(entry.ass)
+			new_vars = list(entry.vars)
 			index_target = entry.vars.index(target)
 			if len(new_vars) > 1: #il caso in cui la variabile da eliminare è l' unica rimasta fa eccezione
 				del new_vars[index_target]
 				del new_ass[index_target]#rimuove l' ass corrispondende alla variabile target (by index)
-			if maxed_cpt.contains(new_vars,new_ass):
-				new_val = entry.val + maxed_cpt.get_value(new_vars,new_ass)
-				maxed_cpt.update(new_vars,new_ass, new_val)
+			key = tuple(new_ass)
+			if key in dict_maxed_cpt: 
+				dict_maxed_cpt[key] += entry.val
 			else:
-				maxed_cpt.add(Assignment(new_vars,new_ass, entry.val))
-		return maxed_cpt
+				dict_maxed_cpt[key] = entry.val
+		return self.dict_to_cpt(new_vars,dict_maxed_cpt)
 
 class Assignment:
 	def __init__(self, vars, ass, val):
