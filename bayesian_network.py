@@ -11,7 +11,6 @@ class BayesNet:
 
 	def get_node(self, name):
 		for node in self.nodes:
-			print("node.name: ",node.var.name)
 			if node.var.name==name:
 				return node
 		return None
@@ -38,20 +37,18 @@ class BayesNet:
 
 		current_best_value = node.maxed_cpt.best_value()
 		best_ass = node.cpt.get_var_ass_from_value(node.var.name,current_best_value)
-		print("current_best_value: ",current_best_value)
-		print("best_ass: ",best_ass)
+		current_best_value = node.maxed_cpt.best_value()
+		mpe_value = current_best_value
+		for node in self.nodes:
+			if history_cpt.assignments:
+				target_vars, target_ass = history_cpt.get_ass_for_vars(node.parents)
+				current_best_value = node.maxed_cpt.best_value_for_Ass(target_vars, target_ass) #l' ultimo Ass inserito (quello dell' iterazione precedente)
+			best_ass = node.cpt.get_var_ass_from_value(node.var.name,current_best_value)
+			history_cpt.add(Assignment(node.var.name, best_ass, current_best_value))
 
-		'''current_best_value = node.maxed_cpt.best_value()
-								mpe_value = current_best_value
-								for node in self.nodes:
-									if history_cpt.assignments:
-										target_vars, target_ass = history_cpt.get_ass_for_vars(node.parents)
-										current_best_value = node.maxed_cpt.best_value_for_Ass(target_vars, target_ass) #l' ultimo Ass inserito (quello dell' iterazione precedente)
-									best_ass = node.cpt.get_var_ass_from_value(node.var.name,current_best_value)
-									history_cpt.add(Assignment(node.var.name, best_ass, current_best_value))'''
-		
-		#print("Valore finale MPE: ", mpe_value)
+		print("Valore finale MPE: ", mpe_value)
 		history_cpt.print("Best assignments")
+		#survey con S,O da map
 
 	def map(self,evidences,map_vars):
 		#for e in evidences:
@@ -60,17 +57,21 @@ class BayesNet:
 		all_vars = self.get_all_name_vars()
 		node_to_preserve = set(map_vars).union(set(list(evidences.keys())))
 		vars_to_remove = set(all_vars).difference(node_to_preserve)
+		print("vars_to_remove: ",vars_to_remove)
 		nodes_to_remove = []
 		
 		for map_v in vars_to_remove:
 			for node in self.nodes:
 				if map_v in node.parents:
+					if DEBUG:
+						print("\n nome node in corso: ",node.var.name)
 					node.cpt = node.cpt.pointwise_product(self.get_node(map_v).cpt)
-					node.cpt = node.cpt.sum_out(map_v)
+					node.sum_out(map_v)
 					node.parents.remove(map_v)
 				if node.var.name == map_v:
 					nodes_to_remove.append(node)
 
+		print("FINE MAP ")
 		for node in nodes_to_remove:
 			self.nodes.remove(node)		
 

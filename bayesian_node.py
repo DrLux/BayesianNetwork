@@ -32,6 +32,15 @@ class BayesNode:
 		self.maxed_cpt = self.cpt.max_out(self.var.name)
 		if DEBUG:
 			self.maxed_cpt.print("maxed_cpt (dopo il max_out)")
+
+	def sum_out(self, target_var):
+		if DEBUG:
+			self.cpt.print("cpt (prima del sum_out)")
+		self.cpt = self.cpt.sum_out(target_var)
+		if DEBUG:
+			self.cpt.print("maxed_cpt (dopo il sum_out)")
+
+
 		
 	def pointwise_product(self,maxed_node):
 		if DEBUG:			

@@ -143,7 +143,7 @@ class CPT:
 
 	def sum_out(self,target):
 		if DEBUG:
-			print("target max_out: ", target)
+			print("target sum_out: ", target)
 		dict_maxed_cpt = dict()
 		for entry in self.assignments:
 			new_ass = list(entry.ass)
