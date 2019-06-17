@@ -114,6 +114,22 @@ class CPT:
 			best_value = max(best_value, entry.val)
 		return best_value
 
+	def sum_out(self,target):
+		maxed_cpt = CPT()
+		for entry in self.assignments:
+			new_vars = list(entry.vars) 
+			new_ass = list(entry.ass)
+			index_target = entry.vars.index(target)
+			if len(new_vars) > 1: #il caso in cui la variabile da eliminare è l' unica rimasta fa eccezione
+				del new_vars[index_target]
+				del new_ass[index_target]#rimuove l' ass corrispondende alla variabile target (by index)
+			if maxed_cpt.contains(new_vars,new_ass):
+				new_val = entry.val + maxed_cpt.get_value(new_vars,new_ass)
+				maxed_cpt.update(new_vars,new_ass, new_val)
+			else:
+				maxed_cpt.add(Assignment(new_vars,new_ass, entry.val))
+		return maxed_cpt
+
 class Assignment:
 	def __init__(self, vars, ass, val):
 		self.vars = vars
@@ -127,7 +143,8 @@ class Assignment:
 	def partial_contains(self,vett_vars,vett_ass):
 		common_vars = list(set(vett_vars).intersection(self.vars))
 		#crea un vettore di booleani che all() mette tutti in and
-		return all([common_vars[i] in self.vars and self.ass[self.vars.index(common_vars[i])] == vett_ass[i] for i in range(len(common_vars))])
+		return all([self.ass[self.vars.index(common_vars[i])] == vett_ass[vett_vars.index(common_vars[i])] for i in range(len(common_vars))])
+
 
 	#per ogni var in vett_vars controlla che sia in self.vars e che il corrispondente ass coincida con quello in self.ass
 	def contains(self,vett_vars,vett_ass):

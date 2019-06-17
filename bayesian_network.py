@@ -18,7 +18,9 @@ class BayesNet:
 	def set_evidence(self, var, value):
 		node = self.get_node(var)
 		node.set_node_evidence(value)
-		
+
+	def get_all_name_vars(self):
+		return [v.name for v in self.variables]
 
 	def mpe(self,evidences):
 		history_cpt = CPT()
@@ -44,4 +46,24 @@ class BayesNet:
 		
 		print("Valore finale MPE: ", mpe_value)
 		history_cpt.print("Best assignments")
+
+	def map(self,evidences,map_vars):
+		#for e in evidences:
+		#	self.set_evidence(e,evidences[e])
+
+		all_vars = self.get_all_name_vars()
+		node_to_preserve = set(map_vars).union(set(list(evidences.keys())))
+		#node_to_preserve = map_vars
+		nodes_to_remove = set(all_vars).difference(node_to_preserve)
+		print("nodes_to_remove: ",nodes_to_remove)
+		
+		for map_v in nodes_to_remove:
+			for node in self.nodes:
+				if map_v in node.parents:
+					node.cpt = node.cpt.sum_out(map_v)
+					node.parents.remove(map_v)
+				if node.var.name == map_v:
+					self.nodes.remove(node)		
+
+		self.mpe(evidences)
 
