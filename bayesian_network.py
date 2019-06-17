@@ -11,6 +11,7 @@ class BayesNet:
 
 	def get_node(self, name):
 		for node in self.nodes:
+			print("node.name: ",node.var.name)
 			if node.var.name==name:
 				return node
 		return None
@@ -53,17 +54,20 @@ class BayesNet:
 
 		all_vars = self.get_all_name_vars()
 		node_to_preserve = set(map_vars).union(set(list(evidences.keys())))
-		#node_to_preserve = map_vars
-		nodes_to_remove = set(all_vars).difference(node_to_preserve)
-		print("nodes_to_remove: ",nodes_to_remove)
+		vars_to_remove = set(all_vars).difference(node_to_preserve)
+		nodes_to_remove = []
 		
-		for map_v in nodes_to_remove:
+		for map_v in vars_to_remove:
 			for node in self.nodes:
 				if map_v in node.parents:
+					node.cpt = node.cpt.pointwise_product(self.get_node(map_v).cpt)
 					node.cpt = node.cpt.sum_out(map_v)
 					node.parents.remove(map_v)
 				if node.var.name == map_v:
-					self.nodes.remove(node)		
+					nodes_to_remove.append(node)
+
+		for node in nodes_to_remove:
+			self.nodes.remove(node)		
 
 		self.mpe(evidences)
 

@@ -24,6 +24,30 @@ class CPT:
 	def max_out(self,target):
 		if DEBUG:
 			print("target max_out: ", target)
+		dict_maxed_cpt = dict()
+		for entry in self.assignments:
+			new_ass = list(entry.ass)
+			new_vars = list(entry.vars)
+			index_target = entry.vars.index(target)
+			if len(new_vars) > 1: #il caso in cui la variabile da eliminare è l' unica rimasta fa eccezione
+				del new_vars[index_target]
+				del new_ass[index_target]#rimuove l' ass corrispondende alla variabile target (by index)
+			key = tuple(new_ass)
+			if key in dict_maxed_cpt: 
+				dict_maxed_cpt[key] = max(entry.val, dict_maxed_cpt[key])
+			else:
+				dict_maxed_cpt[key] = entry.val
+		return self.dict_to_cpt(new_vars,dict_maxed_cpt)
+
+	def dict_to_cpt(self,new_vars,dict_maxed_cpt):
+		new_cpt = CPT()
+		for ass,value in dict_maxed_cpt.items():
+			new_cpt.add(Assignment(new_vars,ass,value))
+		return new_cpt
+
+	def old_max_out(self,target):
+		if DEBUG:
+			print("target max_out: ", target)
 		maxed_cpt = CPT()
 		for entry in self.assignments:
 			new_vars = list(entry.vars) 
@@ -40,9 +64,12 @@ class CPT:
 		return maxed_cpt
 	
 	def contains(self,vett_vars,vett_ass):
+		print("Entato in cointains")
 		for entry in self.assignments:
 			if entry.contains(vett_vars,vett_ass): #ferma il ciclo appena hai un match
+				print("Uscito precocemente da cointains")
 				return True
+		print("Uscita standard da cointains")
 		return False
 
 	def update(self,vett_vars,vett_ass,val):
