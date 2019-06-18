@@ -15,15 +15,16 @@ class BayesNet:
 				return node
 		return None
 
-	def set_evidence(self, var, value):
+	def set_evidence(self, var, value): #fallo direttamente nel menu
 		node = self.get_node(var)
 		node.set_node_evidence(value)
 
 	def get_all_name_vars(self):
 		return [v.name for v in self.variables]
 
+    
 	def mpe(self,evidences):
-		history_cpt = CPT()
+		history = CPT()
 		for e in evidences:
 			self.set_evidence(e,evidences[e])
 		maxed_node = None
@@ -34,30 +35,30 @@ class BayesNet:
 				node.pointwise_product(maxed_node)
 			node.max_out()
 			maxed_node = node
+	
+		mpe_value = node.cpt.best_value()
+		history.vars = [mpe_value]
 
-		current_best_value = node.maxed_cpt.best_value()
-		best_ass = node.cpt.get_var_ass_from_value(node.var.name,current_best_value)
-		current_best_value = node.maxed_cpt.best_value()
-		mpe_value = current_best_value
+		parents_ass = []		
 		for node in self.nodes:
-			if history_cpt.assignments:
-				target_vars, target_ass = history_cpt.get_ass_for_vars(node.parents)
-				current_best_value = node.maxed_cpt.best_value_for_Ass(target_vars, target_ass) #l' ultimo Ass inserito (quello dell' iterazione precedente)
-			best_ass = node.cpt.get_var_ass_from_value(node.var.name,current_best_value)
-			history_cpt.add(Assignment(node.var.name, best_ass, current_best_value))
+			for p in node.parents:
+				parents_ass.append(history.cpt[p])
+			best_ass = node.cpt.best_ass_for_node_var(node.parents, parents_ass)
+			history.cpt[node.var.name] = best_ass
+			parents_ass.clear()
+		
 
 		print("Valore finale MPE: ", mpe_value)
-		history_cpt.print("Best assignments")
-		#survey con S,O da map
+		history.print("Best assignments")
+
 
 	def map(self,evidences,map_vars):
-		#for e in evidences:
-		#	self.set_evidence(e,evidences[e])
-
+		for e in evidences:
+			self.set_evidence(e,evidences[e])
+		
 		all_vars = self.get_all_name_vars()
 		node_to_preserve = set(map_vars).union(set(list(evidences.keys())))
 		vars_to_remove = set(all_vars).difference(node_to_preserve)
-		print("vars_to_remove: ",vars_to_remove)
 		nodes_to_remove = []
 		
 		for map_v in vars_to_remove:
@@ -75,5 +76,5 @@ class BayesNet:
 		for node in nodes_to_remove:
 			self.nodes.remove(node)		
 
-		self.mpe(evidences)
+		self.mpe(dict())
 

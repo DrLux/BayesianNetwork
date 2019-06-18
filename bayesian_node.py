@@ -11,11 +11,11 @@ class BayesNode:
 		self.var = var
 		self.parents = parents
 		self.cpt = cpt
-		self.maxed_cpt = CPT()
+		self.factor = CPT()
 
 		
-	def set_node_evidence(self,value):
-		self.cpt.set_evidence(self.var.name, value)
+	def set_node_evidence(self,ass):
+		self.cpt.set_evidence(self.var.name, ass)
 
 
 	def print(self):
@@ -23,30 +23,28 @@ class BayesNode:
 		print("domain: ", self.var.domain)
 		print("ctp: ", self.cpt.print())
 		print("parents: ", self.parents)
-		self.maxed_cpt.print("Maxed Cpt")
+		self.factor.print("Factor")
 
 	 
 	def max_out(self):
 		if DEBUG:
 			self.cpt.print("cpt (prima del max_out)")
-		self.maxed_cpt = self.cpt.max_out(self.var.name)
+		self.factor = self.cpt.max_out(self.var.name)
 		if DEBUG:
-			self.maxed_cpt.print("maxed_cpt (dopo il max_out)")
+			self.factor.print("factor dopo il max out")
 
 	def sum_out(self, target_var):
 		if DEBUG:
 			self.cpt.print("cpt (prima del sum_out)")
 		self.cpt = self.cpt.sum_out(target_var)
 		if DEBUG:
-			self.cpt.print("maxed_cpt (dopo il sum_out)")
+			self.cpt.print("factor (dopo il sum_out)")
 
 
 		
-	def pointwise_product(self,maxed_node):
+	def pointwise_product(self,other_factor):
 		if DEBUG:			
 			self.cpt.print("cpt prima del pointwise_product")
-			
-		self.cpt = self.cpt.pointwise_product(maxed_node.maxed_cpt) 
-
+		self.cpt = self.cpt.pointwise_product(other_factor.factor) 
 		if DEBUG:
 			self.cpt.print("cpt dopo il pointwise_product")

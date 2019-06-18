@@ -40,7 +40,8 @@ def load_net(path):
 
 				#parsing della CPT
 				cpt = CPT()
-				vars_Ass = name_var + parents_name
+				vars_ass = name_var + parents_name
+				cpt.set_vars(vars_ass)
 				new_i = i + 1
 				next_line = lineList[new_i]
 				while next_line[0] != "}":
@@ -49,7 +50,7 @@ def load_net(path):
 						next_line = next_line.replace(';', '').split()
 						for new_j in range(1,len(next_line)): #per ogni parola nella riga
 							ass = get_var_domain_in_index(name_var,new_j-1,netVariables)
-							cpt.add(Assignment(vars_Ass,ass,float(next_line[new_j])))
+							cpt.cpt[tuple(ass)] = float(next_line[new_j])
 					else: #cpt_eas.add(Assignment(['e','a','s'],['high','young','m'],0.75))
 						next_line = next_line.replace(',', '')
 						next_line = next_line.replace(';', '')
@@ -57,7 +58,7 @@ def load_net(path):
 						val = next_line[next_line.index(')')+1:].split() 
 						val = list(map(float, val)) #cast da string a float
 						for x in range(len(val)):
-							cpt.add(Assignment(vars_Ass,get_var_domain_in_index(name_var,x,netVariables) + ass,val[x]))
+							cpt.cpt[tuple(get_var_domain_in_index(name_var,x,netVariables) + ass)] = val[x]
 
 					new_i += 1
 					next_line = lineList[new_i]

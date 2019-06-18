@@ -1,195 +1,99 @@
-DEBUG = True 
-
+DEBUG = False 
 
 class CPT:
 	def __init__(self):
-		self.assignments = []
+		self.vars = []
+		self.cpt = dict()
 
 	
-	def add(self,Assignment): 
-		self.assignments.append(Assignment)
+	def add(self,ass,value): 
+		self.cpt[tuple(ass)] = value
+		
+	def set_vars(self, vars):
+	    self.vars = vars
 
 	def print(self, message="Print CPT"): 
 		print(message)
-		for entry in self.assignments:
-			entry.print()
+		print(self.vars)
+		for ass,value in self.cpt.items():
+			print(ass," -> ",value)
 		
 	#supporta una sola variabile e un solo valore
-	def set_evidence(self,name_var,ass):
-		for entry in self.assignments:
-			index = entry.vars.index(name_var)
-			if entry.ass[index] != ass:
-				entry.val = 0
+	def set_evidence(self,var,ass):
+		index = self.vars.index(var)
+		for key,value in self.cpt.items():	
+			if key[index] != ass:
+				self.cpt[key] = 0
 	
 	def max_out(self,target):
 		if DEBUG:
 			print("target max_out: ", target)
-		dict_maxed_cpt = dict()
-		for entry in self.assignments:
-			new_ass = list(entry.ass)
-			new_vars = list(entry.vars)
-			index_target = entry.vars.index(target)
+		factor = CPT()
+		for ass,value in self.cpt.items():
+			new_ass = list(ass) #il list serve per copiare i valori e non solo l'indirizzo
+			new_vars = list(self.vars) #qui si può ottimizzare
+			index_target = new_vars.index(target)
 			if len(new_vars) > 1: #il caso in cui la variabile da eliminare è l' unica rimasta fa eccezione
 				del new_vars[index_target]
 				del new_ass[index_target]#rimuove l' ass corrispondende alla variabile target (by index)
 			key = tuple(new_ass)
-			if key in dict_maxed_cpt: 
-				dict_maxed_cpt[key] = max(entry.val, dict_maxed_cpt[key])
+			if key in factor.cpt: 
+				factor.cpt[key] = max(self.cpt[ass], factor.cpt[key])
 			else:
-				dict_maxed_cpt[key] = entry.val
-		return self.dict_to_cpt(new_vars,dict_maxed_cpt)
-
-	def dict_to_cpt(self,new_vars,dict_maxed_cpt):
-		new_cpt = CPT()
-		for ass,value in dict_maxed_cpt.items():
-			new_cpt.add(Assignment(new_vars,ass,value))
-		return new_cpt
-
-	
-	def contains(self,vett_vars,vett_ass):
-		print("Entato in cointains")
-		for entry in self.assignments:
-			if entry.contains(vett_vars,vett_ass): #ferma il ciclo appena hai un match
-				print("Uscito precocemente da cointains")
-				return True
-		print("Uscita standard da cointains")
-		return False
-
-	def update(self,vett_vars,vett_ass,val):
-		for entry in self.assignments:
-			if entry.contains(vett_vars,vett_ass): 
-				entry.val = val
-
-	def get_value(self,vett_vars,vett_ass):
-		for entry in self.assignments:
-			if entry.contains(vett_vars,vett_ass):
-				return entry.val
-
+				factor.cpt[key] = self.cpt[ass]
+		
+		factor.vars = new_vars
+		return factor
+		
 	def pointwise_product(self,other_cpt):
-		new_cpt = CPT()
-		for entry in self.assignments:
-			for other_entry in other_cpt.assignments:
-				common_var = set(entry.vars).intersection(set(other_entry.vars))
-				if all([entry.ass[entry.vars.index(c_v)] == other_entry.ass[other_entry.vars.index(c_v)] for c_v in common_var]):
-					new_vars = list(entry.vars) #copio la lista non passo il puntatore
-					new_ass = list(entry.ass) #copio la lista non passo il puntatore
-					for i in range(len(other_entry.vars)):#aggiunge le var e i relativi ass dell' altro nodo
-						if other_entry.vars[i] not in new_vars:
-							new_vars.append(other_entry.vars[i])
-							new_ass.append(other_entry.ass[i])
+		pointwise = CPT()
+		common_var = set(self.vars).intersection(set(other_cpt.vars))
+		for ass,val in self.cpt.items():
+			for other_ass,other_val in other_cpt.cpt.items():	
+				if all([ass[self.vars.index(c_v)] == other_ass[other_cpt.vars.index(c_v)] for c_v in common_var]):
+					new_ass = list(ass) #copio la lista non passo il puntatore
+					new_vars = list(self.vars) #non lo faccio staticamente fuori dal loop perché devo rispettare l' ordine
+					for i in range(len(other_cpt.vars)):#aggiunge le var e i relativi ass dell' altro nodo
+						if other_cpt.vars[i] not in common_var:
+							new_ass.append(other_ass[i])
+							new_vars.append(other_cpt.vars[i])
 					if DEBUG:
-						print(other_entry.val," * ", entry.val, " = ", other_entry.val*entry.val)
-					new_cpt.add(Assignment(new_vars,new_ass,(other_entry.val*entry.val)))	
-		return new_cpt
-
-	def old_pointwise_product(self,other_cpt):
-		new_cpt = CPT()
-		for entry in self.assignments:
-			for other_entry in other_cpt.assignments:
-				if entry.partial_contains(other_entry.vars,other_entry.ass) or other_entry.partial_contains(entry.vars,entry.ass): 
-					new_vars = list(entry.vars) #copio la lista non passo il puntatore
-					new_ass = list(entry.ass) #copio la lista non passo il puntatore
-					for i in range(len(other_entry.vars)):#aggiunge le var e i relativi ass dell' altro nodo
-						if other_entry.vars[i] not in new_vars:
-							new_vars.append(other_entry.vars[i])
-							new_ass.append(other_entry.ass[i])
-					if DEBUG:
-						print(other_entry.val," * ", entry.val, " = ", other_entry.val*entry.val)
-					new_cpt.add(Assignment(new_vars,new_ass,(other_entry.val*entry.val)))	
-
-		return new_cpt
-
-	def get_best_ass(self, target_var, history):
-		best_ass = None
-		for entry in self.assignments:
-			if not best_ass or best_ass.val < entry.val : #se best_ass è vuoto o comunque inferiore ad entry
-				best_ass = entry    
-		return best_ass
-
-	def get_var_ass_from_value(self, target_var, target_value):
-		for entry in self.assignments:
-			if entry.val == target_value:
-				return entry.get_var_ass(target_var)
-	
-	def	best_value_for_Ass(self,target_vals, target_ass):
-		best_value = -1
-		for entry in self.assignments:
-			if entry.contains(target_vals, target_ass):
-				best_value = max(best_value, entry.val)
-		return best_value
-
-	#da una lista di Ass devo crearne uno che contiene solo var-ass interessate. 
-	#Se il nodo ha i padri (vett_vars =! null) allora cerca l' ass di quelli 
-	#Se vett_vars è nullo cerco l' ass del nodo precedente, ovvero l' ultimo in lista
-	def get_ass_for_vars(self,parents_vars):
-		target_ass = []
-		target_vars = [] #se il nodo ha parenti quelli sono i suoi target, altrimenti inizializzera con array vuoto
-		if (parents_vars):#se il nodo attuale ha parents
-			for entry in self.assignments:
-				for v in parents_vars:
-					if v in entry.vars:
-						target_vars.append(v)
-						target_ass.append(entry.get_var_ass(v))
-		else: #se non li ha usa l' ultimo nodo visto finora
-			target_vals =  self.assignments[-1].vars
-			target_ass = self.assignments[-1].ass
-		return target_vars, target_ass
-
-	def best_value(self):
-		best_value = -1
-		for entry in self.assignments:
-			best_value = max(best_value, entry.val)
-		return best_value
-
+						print(other_val," * ", val, " = ", other_val*val)
+					pointwise.cpt[tuple(new_ass)] = val* other_val	
+		pointwise.vars = list(new_vars)
+		return pointwise
+    
+    
+		
 	def sum_out(self,target):
 		if DEBUG:
-			print("target sum_out: ", target)
-		dict_maxed_cpt = dict()
-		for entry in self.assignments:
-			new_ass = list(entry.ass)
-			new_vars = list(entry.vars)
-			index_target = entry.vars.index(target)
+			print("target max_out: ", target)
+		factor = CPT()
+		for ass,value in self.cpt.items():
+			new_ass = list(ass) #il list serve per copiare i valori e non solo l'indirizzo
+			new_vars = list(self.vars) #qui si può ottimizzare
+			index_target = self.vars.index(target)
 			if len(new_vars) > 1: #il caso in cui la variabile da eliminare è l' unica rimasta fa eccezione
 				del new_vars[index_target]
+				factor.vars = new_vars
 				del new_ass[index_target]#rimuove l' ass corrispondende alla variabile target (by index)
 			key = tuple(new_ass)
-			if key in dict_maxed_cpt: 
-				dict_maxed_cpt[key] += entry.val
+			if key in factor.cpt: 
+				factor.cpt[key] += self.cpt[ass]
 			else:
-				dict_maxed_cpt[key] = entry.val
-		return self.dict_to_cpt(new_vars,dict_maxed_cpt)
+				factor.cpt[key] = self.cpt[ass]
+		return factor
 
-class Assignment:
-	def __init__(self, vars, ass, val):
-		self.vars = vars
-		self.ass = ass
-		self.val = val
+	def best_value(self):
+		return max(list(self.cpt.values()))
 
-	def print(self,message=""):
-		print(message, self.vars, " = ", self.ass, " ->", self.val)
+	def best_ass_for_node_var(self,parents_var, parents_ass):
+		best_ass = None
+		best_value = -1
+		for ass, val in self.cpt.items():
+			if all([ass[self.vars.index(p_v)] == parents_ass[parents_var.index(p_v)] for p_v in parents_var]):
+				if val > best_value:
+					best_ass = ass[0] #prendo sempre il primo valore, ovvero del nodo corrente
+					best_value = val
+		return best_ass
 
-	#verifica (solo tra le variabili in comune tra quelle date e quelle di self.vars) che tutti i rispettivi ass coincidano con quelli delle rispettive variabili in self.ass
-	def partial_contains(self,vett_vars,vett_ass):
-		common_vars = list(set(vett_vars).intersection(self.vars))
-		#crea un vettore di booleani che all() mette tutti in and
-		return all([self.ass[self.vars.index(common_vars[i])] == vett_ass[vett_vars.index(common_vars[i])] for i in range(len(common_vars))])
-
-
-	#per ogni var in vett_vars controlla che sia in self.vars e che il corrispondente ass coincida con quello in self.ass
-	def contains(self,vett_vars,vett_ass):
-		#crea un vettore di booleani che all() mette tutti in and
-		if vett_vars: 
-			return all([vett_vars[i] in self.vars and self.ass[self.vars.index(vett_vars[i])] == vett_ass[i] for i in range(len(vett_vars))])
-		else: #voglio solo vedere se in questa entry c'è un determinato assignments (senza rispettiva var)
-			return (vett_ass in self.ass) 
-
-
-	#la variabile passata è una singola var
-	def get_var_ass(self,var):		
-		if isinstance(self.ass, list):
-			index_var = self.vars.index(var)
-			return self.ass[index_var]
-		else:
-			return self.ass
-
-	 
