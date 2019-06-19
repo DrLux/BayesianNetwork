@@ -36,8 +36,7 @@ class BayesNet:
 			node.max_out()
 			maxed_node = node
 	
-		mpe_value = node.cpt.best_value()
-		history.vars = [mpe_value]
+		history.vars = [node.cpt.best_value()]
 
 		parents_ass = []		
 		for node in self.nodes:
@@ -48,7 +47,6 @@ class BayesNet:
 			parents_ass.clear()
 		
 
-		print("Valore finale MPE: ", mpe_value)
 		history.print("Best assignments")
 
 

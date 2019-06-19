@@ -1,4 +1,5 @@
 from bayesian_network import *
+from graph import *
 
 #data una variabile e una lista di variabili restituisce l' index-esimo valore del dominio nella var trovata nella lista delle var
 def get_var_domain_in_index(target_var,index,netVariables):
@@ -16,6 +17,7 @@ def load_net(path):
 		lineList = file.readlines()
 		netVariables = []
 		netNodes = []
+		graph = Graph()
 		for i in range(len(lineList)): #itera sulle righe del file
 			if 'variable' in lineList[i]:
 
@@ -37,6 +39,10 @@ def load_net(path):
 				#parsing del nome della variabile
 				name_var = [line[2]] #la 3 parola contiene il nome della variabile
 				parents_name = line[4:line.index(')')] #se ci sono parents le trovo dal 4 token fino alla chiusura parentesi
+				if parents_name:
+					graph.add(name_var,parents_name)
+				else:
+					graph.add_root(name_var)
 
 				#parsing della CPT
 				cpt = CPT()
@@ -62,8 +68,10 @@ def load_net(path):
 
 					new_i += 1
 					next_line = lineList[new_i]
-				netNodes.append(BayesNode(get_var_from_name(name_var[0],netVariables),parents_name,cpt))
+				new_node = BayesNode(get_var_from_name(name_var[0],netVariables),parents_name,cpt)
+				netNodes.append(new_node)
+				graph.add_nodes(name_var[0],new_node)
 										
-		bn = BayesNet(netVariables,netNodes)
+		bn = BayesNet(netVariables,graph.order_nodes(netNodes))
 		file.close()
 	return bn

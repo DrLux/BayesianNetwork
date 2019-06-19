@@ -17,7 +17,6 @@ class BayesNode:
 	def set_node_evidence(self,ass):
 		self.cpt.set_evidence(self.var.name, ass)
 
-
 	def print(self):
 		print("\n var: ", self.var.name)
 		print("domain: ", self.var.domain)
