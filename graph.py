@@ -25,16 +25,14 @@ class Graph:
 
 	def order_nodes(self,net_nodes):#a.insert(posizione,valore)
 		ordered_nodes = []
-		topoligical_order = []
+
 		for node in net_nodes:
-			if node.var.name in self.roots:
+			if node.var.name in self.roots or len(ordered_nodes) == 0: #se sei root o tanto comunque la lista degli ordinati è vuota, mettiti in testa
 				ordered_nodes.insert(0,node)
-				topoligical_order.insert(0,node.var.name)
 			else:		
 				for i in range(0,len(ordered_nodes)):
 					if node.var.name not in self.graph or len(ordered_nodes) == i+1: #se non è nel grafo, o sono arrivato alla fine significa che è una foglia, aggiungo in coda
 						ordered_nodes.append(node)
-						topoligical_order.append(node.var.name)
 						break
 					else:
 						parents = list(node.parents)
@@ -43,9 +41,7 @@ class Graph:
 						
 						if (ordered_nodes[i+1].var.name in self.graph[node.var.name]) or not parents: #se becco un mio figlio o ho passato tutti i miei parents mi aggiungo in quel punto
 							ordered_nodes.insert(i+1,node)
-							topoligical_order.insert(i+1,node.var.name)
 							break
-		print("topoligical_order: ",topoligical_order)
 		return ordered_nodes,self.nodes
 
 		

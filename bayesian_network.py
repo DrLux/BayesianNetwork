@@ -10,8 +10,8 @@ class BayesNet:
 		for node in self.nodes:
 			node.print()
 
-	def get_all_node(self):
-		return list(dict_nodes.keys())
+	def get_all_nodes(self):
+		return list(self.dict_nodes.keys())
 		
 	def set_evidence(self, var, ass): #fallo direttamente nel menu
 		node = self.dict_nodes[var]
@@ -79,5 +79,6 @@ class BayesNet:
 		for node in nodes_to_remove:
 			self.nodes.remove(node)		
 
+		print("fine map")
 		self.mpe(dict())
 
