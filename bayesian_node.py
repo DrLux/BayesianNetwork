@@ -20,11 +20,11 @@ class BayesNode:
 	def print(self):
 		print("\n var: ", self.var.name)
 		print("domain: ", self.var.domain)
-		print("ctp: ", self.cpt.print())
 		print("parents: ", self.parents)
+		self.cpt.print("cpt")
 		self.factor.print("Factor")
 
-	 
+	
 	def max_out(self):
 		if DEBUG:
 			self.cpt.print("cpt (prima del max_out)")
@@ -36,14 +36,11 @@ class BayesNode:
 		if DEBUG:
 			self.cpt.print("cpt (prima del sum_out)")
 		self.cpt = self.cpt.sum_out(target_var)
-		if DEBUG:
-			self.cpt.print("factor (dopo il sum_out)")
-
+		
 
 		
 	def pointwise_product(self,other_factor):
-		if DEBUG:			
+		if DEBUG:
 			self.cpt.print("cpt prima del pointwise_product")
 		self.cpt = self.cpt.pointwise_product(other_factor.factor) 
-		if DEBUG:
-			self.cpt.print("cpt dopo il pointwise_product")
+		

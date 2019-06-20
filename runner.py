@@ -41,6 +41,8 @@ class Menu:
 		self.evidences[var.name] = ass
 		self.set_evidences(all_vars)
 
+
+
 	def select_map_var(self):
 		all_vars = self.network.variables
 		print("\nAll the available variables: \n")
@@ -58,6 +60,24 @@ class Menu:
 		self.select_map_var()
 
 	def main_menu(self):
+		'''all_vars = self.network.variables
+		var = all_vars[0]
+		ass = var.domain[0]
+		self.evidences[var.name] = ass
+
+		var = all_vars[10]
+		ass = var.domain[3]
+		self.evidences[var.name] = ass
+
+		var = all_vars[16]
+		ass = var.domain[2]
+		self.evidences[var.name] = ass
+
+		var = all_vars[12]
+		ass = var.domain[1]
+		self.evidences[var.name] = ass
+		self.network.mpe(self.evidences)
+		'''
 		print("\nMain Menu")
 		print("0) Change Network")
 		print("1) Print Network")
@@ -84,36 +104,8 @@ class Menu:
 			self.selected_map_vars = []
 			self.select_map_var()
 			self.network.map(self.evidences,self.selected_map_vars)
+		
 
 
 if __name__ == "__main__":
 	Menu()
-
-'''
-#name_network = "earthquake.bif"
-#networs_path = join(os.getcwd(), "networks")
-#network = load_net(join(networs_path, name_network))
-
-a = BayesVar('a',['t','f'])
-b = BayesVar('b',['t','f']) 
-c = BayesVar('c',['t','f'])
-
-netVariables = [a,b,c]
-
-cpt_abe = CPT()
-cpt_abe.add(Assignment(['a','b','e'],['t','t','t'], 0.95))
-cpt_abe.add(Assignment(['a','b','e'],['t','t','f'], 0.94))
-cpt_abe.add(Assignment(['a','b','e'],['t','f','t'], 0.29))
-cpt_abe.add(Assignment(['a','b','e'],['t','f','f'], 0.001))
-
-cpt_abe.add(Assignment(['a','b','e'],['f','t','t'], 0.05))
-cpt_abe.add(Assignment(['a','b','e'],['f','t','f'], 0.06))
-cpt_abe.add(Assignment(['a','b','e'],['f','f','t'], 0.71))
-cpt_abe.add(Assignment(['a','b','e'],['f','f','f'], 0.909))
-
-abe = BayesNode(a,['b','e'],cpt_abe)
-
-cpt_abe = cpt_abe.sum_out('b')
-cpt_abe.print("ae")
-'''
-

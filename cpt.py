@@ -23,8 +23,8 @@ class CPT:
 		index = self.vars.index(var)
 		for key,value in self.cpt.items():	
 			if key[index] != ass:
-				self.cpt[key] = 0
-	
+				self.cpt[key] = 0.0
+		
 	def max_out(self,target):
 		if DEBUG:
 			print("target max_out: ", target)
@@ -47,7 +47,7 @@ class CPT:
 		
 	def pointwise_product(self,other_cpt):
 		pointwise = CPT()
-		common_var = set(self.vars).intersection(set(other_cpt.vars))
+		common_var = sorted(set(self.vars).intersection(set(other_cpt.vars)))
 		for ass,val in self.cpt.items():
 			for other_ass,other_val in other_cpt.cpt.items():	
 				if all([ass[self.vars.index(c_v)] == other_ass[other_cpt.vars.index(c_v)] for c_v in common_var]):
@@ -90,8 +90,20 @@ class CPT:
 	def best_ass_for_node_var(self,parents_var, parents_ass):
 		best_ass = None
 		best_value = -1
-		for ass, val in self.cpt.items():
-			if all([ass[self.vars.index(p_v)] == parents_ass[parents_var.index(p_v)] for p_v in parents_var]):
+		if parents_var:
+			for ass, val in self.cpt.items():
+				if isinstance(parents_var, (list, tuple)):
+					current_entry = all([ass[self.vars.index(p_v)] == parents_ass[parents_var.index(p_v)] for p_v in parents_var])
+				else:
+					current_entry =  ass[self.vars.index(parents_var)] == parents_ass
+
+				if current_entry:
+					if val > best_value:
+						best_ass = ass[0] #prendo sempre il primo valore, ovvero del nodo corrente
+						best_value = val
+
+		else:
+			for ass, val in self.cpt.items():
 				if val > best_value:
 					best_ass = ass[0] #prendo sempre il primo valore, ovvero del nodo corrente
 					best_value = val
