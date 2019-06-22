@@ -1,0 +1,236 @@
+Esecuzione di MAP per la rete Earthquake step by step
+
+Rete: 
+
+B
+------
+T=0.01
+F=0.99
+
+E
+------
+T=0.02
+F=0.98
+
+A|B E
+-----
+T T T = 0.95 
+T T F = 0.94
+T F T = 0.29
+T F F = 0.001
+F T T = 0.05
+F T F = 0.06
+F F T = 0.71
+F F F = 0.999
+
+J|A
+---
+T T = 0.9
+T F = 0.05
+F T = 0.1
+F F = 0.95
+
+M|A
+---
+T T = 0.7
+T F = 0.01
+F T = 0.3
+F F = 0.99
+
+Per questo esempio ho impostato le variabili di MAP: {M,J,B,E}. 
+L' unica variabile non-MAP è {A}
+
+######################################################################
+
+Fase MAP: processo le variabili non-MAP (in questo caso solo A)
+
+1a) moltiplico tutti i fattori che contengono A: fM(M,A) x fJ(J,A) x fA(A,B,E) ottenendo fMJA(M,A,J,B,E)
+
+Moltiplico A|B E per J|A e M|A
+
+A|B E
+-----
+T T T = 0.95 
+T T F = 0.94
+T F T = 0.29
+T F F = 0.001
+F T T = 0.05
+F T F = 0.06
+F F T = 0.71
+F F F = 0.999
+
+J|A
+---
+T T = 0.9
+T F = 0.05
+F T = 0.1
+F F = 0.95
+
+M|A
+---
+T T = 0.7
+T F = 0.01
+F T = 0.3
+F F = 0.99
+
+M A J B E
+----------
+T T T T T = 0.95 * 0.9 * 0.7 = 0.5984999999999999
+T T T T F = 0.94 * 0.9 * 0.7 = 0.5922
+T T T F T = 0.29 * 0.9 * 0.7 = 0.1827
+T T T F F = 0.001 * 0.9 * 0.7 = 0.00063
+T T F T T = 0.95 * 0.1 * 0.7 = 0.06649999999999999
+T T F T F = 0.94 * 0.1 * 0.7 = 0.0658
+T T F F T = 0.29 * 0.1 * 0.7 = 0.0203
+T T F F F = 0.001 * 0.1 * 0.7 = 0.00007
+T F T T T = 0.05 * 0.05 * 0.01 = 0.000025
+T F T T F = 0.06 * 0.05 * 0.01 = 0.00003
+T F T F T = 0.71 * 0.05 * 0.01 = 0.00035499999999999996
+T F T F F = 0.999 * 0.05 * 0.01 = 0.0004995
+T F F T T = 0.05 * 0.95 * 0.01 = 0.000475
+T F F T F = 0.06 * 0.95 * 0.01 = 0.00057
+T F F F T = 0.71 * 0.95 * 0.01 = 0.006745
+T F F F F = 0.999 * 0.95 * 0.01 = 0.009490499999999999
+F T T T T = 0.95 * 0.9 * 0.3 = 0.2565
+F T T T F = 0.94 * 0.9 * 0.3 = 0.25379999999999997
+F T T F T = 0.29 * 0.9 * 0.3 = 0.0783
+F T T F F = 0.001 * 0.9 * 0.3 = 0.00027
+F T F T T = 0.95 * 0.1 * 0.3 = 0.028499999999999998
+F T F T F = 0.94 * 0.1 * 0.3 = 0.0282
+F T F F T = 0.29 * 0.1 * 0.3 = 0.0087
+F T F F F = 0.001 * 0.1 * 0.3 = 0.00003
+F F T T T = 0.05 * 0.05 * 0.99 = 0.0024750000000000006
+F F T T F = 0.06 * 0.05 * 0.99 = 0.00297
+F F T F T = 0.71 * 0.05 * 0.99 = 0.035144999999999996
+F F T F F = 0.999 * 0.05 * 0.99 = 0.0494505
+F F F T T = 0.05 * 0.95 * 0.99 = 0.047025
+F F F T F = 0.06 * 0.95 * 0.99 = 0.056429999999999994
+F F F F T = 0.71 * 0.95 * 0.99 = 0.667755
+F F F F F = 0.999 * 0.95 * 0.99 = 0.9395595
+
+1b) faccio sumout di A su questo fattore ottenendo fMJ[A](M,J,B,E)
+
+M J B E
+--------
+T T T T = 0.000025 + 0.5984999999999999 = 0.598525
+T T T F = 0.00003 + 0.5922 = 0.5922299999999999
+T T F T = 0.00035499999999999996 + 0.1827 = 0.183055
+T T F F = 0.0004995 + 0.00063 = 0.0011295
+T F T T = 0.000475 + 0.06649999999999999 = 0.06697499999999999
+T F T F = 0.00057 + 0.0658 = 0.06637
+T F F T = 0.006745 + 0.0203 = 0.027045
+T F F F = 0.009490499999999999 + 0.00007 = 0.0095605
+
+F T T T = 0.0024750000000000006 + 0.2565 = 0.258975
+F T T F = 0.00297 + 0.25379999999999997 = 0.25676999999999994
+F T F T = 0.035144999999999996 + 0.0783 = 0.11344499999999999
+F T F F = 0.0494505 + 0.00027 = 0.0497205
+F F T T = 0.047025 + 0.028499999999999998 = 0.075525
+F F T F = 0.056429999999999994 + 0.0282 = 0.08463
+F F F T = 0.667755 + 0.0087 = 0.676455
+F F F F = 0.9395595 + 0.00003 = 0.9395895
+
+
+
+######################################################################
+Fase MPE: adesso che mi rimangono solo variabili MAP posso comportarmi come
+se si trattasse di una qualsiasi rete su cui fare MPE
+
+2) faccio il maxout di M su fMJ[A](M,J,B,E) ottenendo fJ[MA](J,B,E)
+
+M J B E
+--------
+T T T T = 0.598525 {max per  JBE = T T T }
+T T T F = 0.5922299999999999 {max per  JBE = T T F }
+T T F T = 0.183055 {max per  JBE = T F T }
+T T F F = 0.0011295
+T F T T = 0.06697499999999999
+T F T F = 0.06637
+T F F T = 0.027045
+T F F F = 0.0095605
+F T T T = 0.258975
+F T T F = 0.25676999999999994
+F T F T = 0.11344499999999999
+F T F F = 0.0497205 {max per  JBE = T F F }
+F F T T = 0.075525 {max per  JBE =  F T T }
+F F T F = 0.08463 {max per  JBE = F T F }
+F F F T = 0.676455 {max per  JBE =  F F T }
+F F F F = 0.9395895 {max per  JBE = F F F }
+
+Mi segno le informazioni necessarie poi per stabilire gli assegnamenti finali
+[JBE = T T T] -> [M = T]
+[JBE = T T F] -> [M = T]
+[JBE = T F T] -> [M = T]
+[JBE = T F F] -> [M = F]
+[JBE = F T T] -> [M = F]
+[JBE = F T F] -> [M = F]
+[JBE = F F T] -> [M = F]
+[JBE = F F F] -> [M = F]
+
+3) faccio maxout di J su fJ[MA](J,B,E) ottenendo f[JMA](B,E)
+
+J B E
+------
+T T T = 0.598525 {max per  BE = T T }
+T T F = 0.5922299999999999 {max per  BE = T F }
+T F T = 0.183055
+T F F = 0.0497205
+F T T = 0.075525
+F T F = 0.08463
+F F T = 0.676455 {max per  BE = F T }
+F F F = 0.9395895 {max per  BE = F F }
+
+Mi segno le informazioni necessarie poi per stabilire gli assegnamenti finali
+
+[BE = T T] -> [J = T] -> [M = T]
+[BE = T F] -> [J = T] -> [M = T]
+[BE = F T] -> [J = F] -> [M = F]
+[BE = F F] -> [J = F] -> [M = F]
+
+Ora eseguo il pointwise di BE con i nodi B ed E
+
+4a) moltiplica tutti i fattori che contengono B: fB(B) x f[JMA](B,E) ottenendo fB[JMA](B,E)
+4b) faccio il maxout di B su fB[JMA](B,E) ottenendo f[BJMA](E)
+
+B
+------
+T= 0.01
+F= 0.99
+
+B E
+---
+T T = 0.598525 * 0.01 = 0.00598525
+T F = 0.5922299999999999 * 0.01 = 0.005922299999999999
+F T = 0.676455 * 0.99 =  0.66969045 { max per E = T}
+F F = 0.9395895 * 0.99 = 0.9301936049999999 { max per E = F}
+
+[E = T] -> [B = F] -> [J = T] -> [M = T]
+[E = F] -> [B = F] -> [J = F] -> [M = F]
+
+
+
+5a) moltiplica tutti i fattori che contengono E: fE(E) x f[BJMA](E) ottenendo fE[BJMA](E)
+5b) fa il maxout di E su fE[BJMA](E) ottenendo f[EBJMA] che è la probabilità cercata maxP
+
+
+E
+------
+T= 0.02
+F= 0.98
+
+E
+-
+T = 0.66969045 * 0.02 = 0.013393809000000001
+F = 0.9301936049999999 * 0.98 = 0.9115897328999999 { max per EBJM}
+
+Sapendo che E = F posso ricostruire l' assegnamento di tutte le variabili (MAP)
+[E = F] -> [B = F] -> [J = F] -> [M = F] 
+
+Quello di A non mi interessa perché non è una variabile di MAP (per questo esempio)
+
+Risultato finale:
+MAP value = 9115897328999999
+B = F
+E = F
+J = F
+M = F

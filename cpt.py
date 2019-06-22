@@ -61,9 +61,7 @@ class CPT:
 						print(other_val," * ", val, " = ", other_val*val)
 					pointwise.cpt[tuple(new_ass)] = val* other_val	
 		pointwise.vars = list(new_vars)
-		return pointwise
-    
-    
+		return pointwise    
 		
 	def sum_out(self,target):
 		if DEBUG:
@@ -72,16 +70,17 @@ class CPT:
 		for ass,value in self.cpt.items():
 			new_ass = list(ass) #il list serve per copiare i valori e non solo l'indirizzo
 			new_vars = list(self.vars) #qui si può ottimizzare
-			index_target = self.vars.index(target)
+			index_target = new_vars.index(target)
 			if len(new_vars) > 1: #il caso in cui la variabile da eliminare è l' unica rimasta fa eccezione
 				del new_vars[index_target]
-				factor.vars = new_vars
 				del new_ass[index_target]#rimuove l' ass corrispondende alla variabile target (by index)
 			key = tuple(new_ass)
 			if key in factor.cpt: 
-				factor.cpt[key] += self.cpt[ass]
+				factor.cpt[key] = self.cpt[ass] + factor.cpt[key]
 			else:
 				factor.cpt[key] = self.cpt[ass]
+		
+		factor.vars = new_vars
 		return factor
 
 	def best_value(self):

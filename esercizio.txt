@@ -101,7 +101,7 @@ Maxing-out J from J|A x A_m
 J|A x A_m
 ---
 T T = 0.63 (max per A=T)
-T F = 0.005(max per A=F)
+T F = 0.0005(max per A=F)
 F T = 0
 F F = 0
 
@@ -110,13 +110,13 @@ Aggiorno gli assegnamenti
 
 assign= [
   [A=T] -> [M=T,J=T] with (0.63),
-  [A=F] -> [M=T,J=T] with (0.005)]
+  [A=F] -> [M=T,J=T] with (0.0005)]
 
 Tabella risultante
 
 A_j
 T = 0.63
-F = 0.005
+F = 0.0005
 
 
 --------------------------------------------
