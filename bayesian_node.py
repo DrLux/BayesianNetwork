@@ -26,18 +26,17 @@ class BayesNode:
 
 	
 	def max_out(self):
-		if DEBUG:
-			self.cpt.print("cpt (prima del max_out)")
 		self.factor = self.cpt.max_out(self.var.name)
-		if DEBUG:
-			self.factor.print("factor dopo il max out")
+
+	#fa il max out su tutte le variabili della cpt che non sono tra i parent del nodo
+	def full_max_out(self):
+		var_to_sums = set(self.cpt.vars)-set(self.parents)
+		self.factor = self.cpt
+		for v in var_to_sums:
+			self.factor = self.factor.max_out(v)
 		
 	def pointwise_product(self,other_factor):
-		if DEBUG:
-			self.cpt.print("cpt prima del pointwise_product")
 		self.cpt = self.cpt.pointwise_product(other_factor.factor) 
 		
 	def sum_out(self,target):
-		if DEBUG:
-			self.cpt.print("cpt (prima del sum_out)")
 		self.cpt = self.cpt.sum_out(target)
