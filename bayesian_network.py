@@ -80,26 +80,38 @@ class BayesNet:
 		print("vars_to_remove: ",vars_to_remove)
 		for v  in vars_to_remove: 
 			for node in self.nodes: 
-				if v in node.parents:
-					node_parents = True
-					self.dict_nodes[v].cpt = self.dict_nodes[v].cpt.pointwise_product(node.cpt)
-					node.parents.remove(v)
-					node.parents += self.dict_nodes[v].parents
-					nodes_to_process.append(node)
+				if v in node.get_associated_vars():
+					if v in node.parents:
+						node_parents = True
+						self.dict_nodes[v].cpt = self.dict_nodes[v].cpt.pointwise_product(node.cpt)
+						node.parents = list(set(node.parents).union(set(self.dict_nodes[v].parents))) 
+						node.parents.remove(v)
+						nodes_to_process.append(node)
+					else:
+						node.cpt = node.cpt.pointwise_product(self.dict_nodes[v].cpt)
+						node.sum_out(v)
+
 			if node_parents:
 				node_to_sumout = self.dict_nodes[v]
 				node_to_sumout.sum_out(v)
 				for n in nodes_to_process:
 					n.factor = node_to_sumout.cpt
 					n.cpt = n.factor
-			else:#da verificare se il caso foglia da i risultati giusti. In realtà osserco che moltiplicare e fare sum out rida la stessa cpt che c'era in origine, mi sa che le fogtlie si possono eliminare direttamente e basta
-				for p in self.dict_nodes[v].parents: 
+			else:
+				associated_vars = self.dict_nodes[v].get_associated_vars() #prendo tutte le variabili associate al nodo a|XYZ
+				associated_vars_map = set(associated_vars).intersection(set(vars_to_preserve)) # separo le variabili map
+				asso_vars_to_eliminate =  set(associated_vars) - set(vars_to_preserve) #separo le variabili da eliminare
+				for p in associated_vars_map: 
 					self.dict_nodes[p].cpt = self.dict_nodes[p].cpt.pointwise_product(self.dict_nodes[v].cpt) 
 					self.dict_nodes[p].cpt = self.dict_nodes[p].cpt.sum_out(v)
+					node.cpt = self.dict_nodes[p].cpt.max_out(self.dict_nodes[p].var.name)
+				for p in asso_vars_to_eliminate: 
+					self.dict_nodes[p].cpt = self.dict_nodes[p].cpt.pointwise_product(self.dict_nodes[v].cpt) 
 			self.nodes.remove(self.dict_nodes[v])
 		
 		#parte mpe
 		maxed_node = None #inizio mpe
+
 		for node in reversed(self.nodes):
 			if node in nodes_to_process:
 				node.full_max_out()
@@ -107,12 +119,12 @@ class BayesNet:
 			elif node.var.name in vars_to_preserve:
 				if maxed_node:
 					node.pointwise_product(maxed_node)
-				node.max_out()
+				node.full_max_out() #node.max_out() OCCHIO QUI
 				maxed_node = node
-		self.retropropagate_assignments(node)
 		
 		self.print()
-
+		self.retropropagate_assignments(node)
+		
 	def retropropagate_assignments(self,last_node):
 		history = CPT()
 		history.vars = [last_node.cpt.best_value()]
