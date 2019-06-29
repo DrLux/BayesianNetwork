@@ -24,7 +24,7 @@ class CPT:
 		for key,value in self.cpt.items():	
 			if key[index] != ass:
 				self.cpt[key] = 0.0
-		
+
 	def max_out(self,target):
 		if DEBUG:
 			print("target max_out: ", target)

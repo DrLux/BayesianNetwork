@@ -36,4 +36,8 @@ class Graph:
 						if (ordered_nodes[i+1].var.name in self.graph[node.var.name]) or not parents: #se becco un mio figlio o ho passato tutti i miei parents mi aggiungo in quel punto
 							ordered_nodes.insert(i+1,node)
 							break
-		return ordered_nodes,self.nodes,self.graph
+
+		print("ordine topologico")
+		for o in ordered_nodes:
+			print(o.var.name)
+		return ordered_nodes,self.nodes

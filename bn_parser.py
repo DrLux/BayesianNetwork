@@ -73,8 +73,8 @@ def load_net(path):
 				graph.add_nodes(name_var[0],new_node)
 		
 
-		orderedNodes, dict_nodes, dict_children = graph.order_nodes(netNodes) 
+		orderedNodes, dict_nodes = graph.order_nodes(netNodes) 
 
-		bn = BayesNet(netVariables,orderedNodes, dict_nodes, dict_children)
+		bn = BayesNet(netVariables,orderedNodes, dict_nodes)
 		file.close()
 	return bn
