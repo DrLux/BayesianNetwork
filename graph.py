@@ -17,12 +17,6 @@ class Graph:
 			else:
 				self.graph[p] = node
 
-	def check_grandchildren(children):
-		grandchildren = []
-		for node in children:
-			grandchildren += self.graph[node]
-		return children-set(grandchildren)
-
 	def order_nodes(self,net_nodes):#a.insert(posizione,valore)
 		ordered_nodes = []
 
@@ -42,6 +36,4 @@ class Graph:
 						if (ordered_nodes[i+1].var.name in self.graph[node.var.name]) or not parents: #se becco un mio figlio o ho passato tutti i miei parents mi aggiungo in quel punto
 							ordered_nodes.insert(i+1,node)
 							break
-		return ordered_nodes,self.nodes
-
-		
+		return ordered_nodes,self.nodes,self.graph

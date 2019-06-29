@@ -1,10 +1,11 @@
 from bayesian_node import *
 
 class BayesNet:
-	def __init__(self, variables, nodes, dict_nodes):
-		self.nodes = nodes
-		self.variables = variables
-		self.dict_nodes = dict_nodes
+	def __init__(self, variables, nodes, dict_nodes, dict_children):
+		self.nodes = nodes # node
+		self.variables = variables # string
+		self.dict_nodes = dict_nodes # string -> node
+		self.dict_children = dict_children # string -> string
 
 	def print(self):
 		for node in self.nodes:
@@ -13,14 +14,13 @@ class BayesNet:
 	def get_all_nodes_var(self):
 		return list(self.dict_nodes.keys())
 		
-	def set_evidence(self, var, ass): #fallo direttamente nel menu
-		node = self.dict_nodes[var]
-		node.set_node_evidence(ass)
+	def set_evidence(self, evidences):
+		for var in evidences:
+			node = self.dict_nodes[var]
+			node.set_node_evidence(evidences[e])#assignment
     
 	def mpe(self,evidences):
-		history = CPT()
-		for e in evidences:
-			self.set_evidence(e,evidences[e])
+		self.set_evidence(evidences)
 		maxed_node = None
 		for node in reversed(self.nodes):
 			if DEBUG:
@@ -29,28 +29,30 @@ class BayesNet:
 				node.pointwise_product(maxed_node)
 			node.max_out()
 			maxed_node = node
+
+		self.retropropagate_assignments(maxed_node)
+
 			
-		#node.print()
-		
-		history.vars = [node.cpt.best_value()]
+	def retropropagate_assignments(self,last_node):
+		history = CPT()
+		history.vars = [last_node.cpt.best_value()]
 		parents_ass = []	
 		for i in range(0,len(self.nodes)):
 			if (i == 0):
-				best_ass = node.cpt.best_ass_for_node_var(None,None)
+				best_ass = last_node.cpt.best_ass_for_node_var(None,None,last_node.var.name)
 				history.cpt[self.nodes[i].var.name] = best_ass
 			else:
 				if self.nodes[i].parents:
 					for p in self.nodes[i].parents:#se non ho i parent lo faccio sul nodo precedente
 						parents_ass.append(history.cpt[p])
-					best_ass = self.nodes[i].cpt.best_ass_for_node_var(self.nodes[i].parents, parents_ass)
+					best_ass = self.nodes[i].cpt.best_ass_for_node_var(self.nodes[i].parents, parents_ass,self.nodes[i].var.name)
 				else:
-					best_ass = self.nodes[i].cpt.best_ass_for_node_var(self.nodes[i-1].var.name,history.cpt[self.nodes[i-1].var.name])
+					best_ass = self.nodes[i].cpt.best_ass_for_node_var(self.nodes[i-1].var.name,history.cpt[self.nodes[i-1].var.name],self.nodes[i].var.name)
 				history.cpt[self.nodes[i].var.name] = best_ass
 				parents_ass.clear()
 		
-
 		history.print("Best assignments")
-
+	
 
 	def order_vars_to_remove(self,vars_to_remove):
 		encode_vett_vars = dict()
@@ -61,87 +63,116 @@ class BayesNet:
 			ordered_vars.append(self.nodes[index].var.name)
 		return ordered_vars
 
-	def map(self,evidences,map_vars):
-		for e in evidences:
-			self.set_evidence(e,evidences[e])
+	def make_factor(self,var_node, factors): 
+		factors.append(self.dict_nodes[var_node].cpt)
+		self.dict_nodes[var_node].free = False
+		if var_node in self.dict_children:
+			for c in self.dict_children[var_node]:
+				if self.dict_nodes[c].free:
+					factors.append(self.dict_nodes[c].cpt)
+					self.dict_nodes[c].free = False	
 		
+		'''else: #sembra non necessario
+			stop = False
+			for p in self.dict_nodes[var_node].parents:
+				if self.dict_nodes[p].free and stop == False:
+					factors.append(self.dict_nodes[p].cpt)
+					self.dict_nodes[p].free = False
+					stop = True'''
+
+
+	def remove_non_map(self, factors,vars_to_remove):
+		new_factor = None
+		processed_factors = []
+		
+		'''
+		for v in vars_to_remove:
+			for f in factors:
+				if v in f.vars:
+					if new_factor:
+						new_factor = new_factor.pointwise_product(f) #estraggo i fattori della var e li moltiplico tra loro 
+						processed_factors.append(f)
+					else:
+						new_factor = f
+						processed_factors.append(f)
+			new_factor = new_factor.sum_out(v)
+			factors.append(new_factor)
+			new_factor = None
+			for rf in processed_factors:
+				factors.remove(rf)
+			processed_factors = []
+		
+		final_fact = factors.pop(0)
+		for fa in factors:
+			final_fact = final_fact.pointwise_product(fa)
+		'''
+		for f in factors:
+			if new_factor:
+				new_factor = new_factor.pointwise_product(f) #estraggo i fattori della var e li moltiplico tra loro 
+			else:
+				new_factor = f
+		for v in vars_to_remove:
+			new_factor = new_factor.sum_out(v)
+
+		final_fact = new_factor
+		return final_fact
+		
+	def map(self,evidences,map_vars):
+		if not map_vars:
+			self.mpe(evidences)
+
 		if evidences:
 			vars_to_preserve = set(map_vars).union(set(list(evidences.keys())))
 		else: 
 			vars_to_preserve = set(map_vars)
 		vars_to_remove = set(self.get_all_nodes_var()).difference(vars_to_preserve)
-		vars_to_remove = list(reversed(self.order_vars_to_remove(vars_to_remove)))
+		vars_to_remove = list(reversed(self.order_vars_to_remove(vars_to_remove))) #le ordino in senso topologico
+	
+		#Setto le evidenze		
+		self.set_evidence(evidences)
+
+		#Raccoglo i fattori
+		factors = []
+		for v in vars_to_remove:
+			self.make_factor(v,factors)
 
 		
-		nodes_to_process = []
-		
-		#moltiplico verso il padre
-		node_parents = False
-		print("vars_to_remove: ",vars_to_remove)
-		for v  in vars_to_remove: 
-			for node in self.nodes: 
-				if v in node.get_associated_vars():
-					if v in node.parents:
-						node_parents = True
-						self.dict_nodes[v].cpt = self.dict_nodes[v].cpt.pointwise_product(node.cpt)
-						node.parents = list(set(node.parents).union(set(self.dict_nodes[v].parents))) 
-						node.parents.remove(v)
-						nodes_to_process.append(node)
-					else:
-						node.cpt = node.cpt.pointwise_product(self.dict_nodes[v].cpt)
-						node.sum_out(v)
+		#Rimuovo i fattori non map (sum_out)
+		factor = self.remove_non_map(factors,vars_to_remove)
+		#print("print di facor prima di mpe")
+		#factor.print()
 
-			if node_parents:
-				node_to_sumout = self.dict_nodes[v]
-				node_to_sumout.sum_out(v)
-				for n in nodes_to_process:
-					n.factor = node_to_sumout.cpt
-					n.cpt = n.factor
-			else:
-				associated_vars = self.dict_nodes[v].get_associated_vars() #prendo tutte le variabili associate al nodo a|XYZ
-				associated_vars_map = set(associated_vars).intersection(set(vars_to_preserve)) # separo le variabili map
-				asso_vars_to_eliminate =  set(associated_vars) - set(vars_to_preserve) #separo le variabili da eliminare
-				for p in associated_vars_map: 
-					self.dict_nodes[p].cpt = self.dict_nodes[p].cpt.pointwise_product(self.dict_nodes[v].cpt) 
-					self.dict_nodes[p].cpt = self.dict_nodes[p].cpt.sum_out(v)
-					node.cpt = self.dict_nodes[p].cpt.max_out(self.dict_nodes[p].var.name)
-				for p in asso_vars_to_eliminate: 
-					self.dict_nodes[p].cpt = self.dict_nodes[p].cpt.pointwise_product(self.dict_nodes[v].cpt) 
-			self.nodes.remove(self.dict_nodes[v])
-		
-		#parte mpe
-		maxed_node = None #inizio mpe
-
+		#Propago sui nodi MAP (max_out)
 		for node in reversed(self.nodes):
-			if node in nodes_to_process:
-				node.full_max_out()
-				maxed_node = node
-			elif node.var.name in vars_to_preserve:
-				if maxed_node:
-					node.pointwise_product(maxed_node)
-				node.full_max_out() #node.max_out() OCCHIO QUI
-				maxed_node = node
-		
-		self.print()
-		self.retropropagate_assignments(node)
-		
-	def retropropagate_assignments(self,last_node):
+			if node.var.name in vars_to_preserve:
+				if node.free:
+					node.cpt = node.cpt.pointwise_product(factor)
+					#print("print iniziale: ", node.cpt.print())
+				else:
+					node.cpt = factor
+				node.factor = node.cpt #mi salvo la cpt per la redistribuzione degli assegnamenti dopo
+				node.cpt = node.cpt.max_out(node.var.name)
+				#print("print dopo il max out di ", node.var.name," : ", node.cpt.print())
+
+				factor = node.cpt
+				node.parents = node.cpt.vars
+			else:
+				self.nodes.remove(node)
+
+		#Retropropagazione degli assegnamenti
+		print("printo cpt finale")
+		factor.print()
+		#self.print()
 		history = CPT()
-		history.vars = [last_node.cpt.best_value()]
-		parents_ass = []	
 		for i in range(0,len(self.nodes)):
 			if (i == 0):
-				best_ass = last_node.cpt.best_ass_for_node_var(None,None)
+				history.vars = [self.nodes[i].factor.best_value()]
+				best_ass = self.nodes[i].factor.best_ass_for_node_var(None,None, self.nodes[i].var.name)
 				history.cpt[self.nodes[i].var.name] = best_ass
 			else:
-				if self.nodes[i].parents:
-					for p in self.nodes[i].parents:#se non ho i parent lo faccio sul nodo precedente
-						parents_ass.append(history.cpt[p])
-					best_ass = self.nodes[i].cpt.best_ass_for_node_var(self.nodes[i].parents, parents_ass)
-				else:
-					best_ass = self.nodes[i].cpt.best_ass_for_node_var(self.nodes[i-1].var.name,history.cpt[self.nodes[i-1].var.name])
+				#print(history.print())
+				best_ass = self.nodes[i].factor.best_ass_for_node_var(list(history.cpt.keys()),list(history.cpt.values()),self.nodes[i].var.name)
 				history.cpt[self.nodes[i].var.name] = best_ass
-				parents_ass.clear()
-		
 
 		history.print("Best assignments")
+		

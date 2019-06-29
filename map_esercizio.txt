@@ -229,7 +229,7 @@ Sapendo che E = F posso ricostruire l' assegnamento di tutte le variabili (MAP)
 Quello di A non mi interessa perché non è una variabile di MAP (per questo esempio)
 
 Risultato finale:
-MAP value = 9115897328999999
+MAP value = 0.9115897328999999
 B = F
 E = F
 J = F

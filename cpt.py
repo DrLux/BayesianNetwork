@@ -86,7 +86,8 @@ class CPT:
 	def best_value(self):
 		return max(list(self.cpt.values()))
 
-	def best_ass_for_node_var(self,parents_var, parents_ass):
+	#ritorna il best assignment dati una lista di variabili e il rispettivo valore
+	def best_ass_for_node_var(self,parents_var, parents_ass, node_name):
 		best_ass = None
 		best_value = -1
 		if parents_var:
@@ -98,13 +99,13 @@ class CPT:
 
 				if current_entry:
 					if val > best_value:
-						best_ass = ass[0] #prendo sempre il primo valore, ovvero del nodo corrente
+						best_ass = ass[self.vars.index(node_name)] #prendo sempre il primo valore, ovvero del nodo corrente
 						best_value = val
 
 		else:
 			for ass, val in self.cpt.items():
 				if val > best_value:
-					best_ass = ass[0] #prendo sempre il primo valore, ovvero del nodo corrente
+					best_ass = ass[self.vars.index(node_name)] #prendo sempre il primo valore, ovvero del nodo corrente
 					best_value = val
 		return best_ass
 
