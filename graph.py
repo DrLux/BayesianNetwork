@@ -19,25 +19,28 @@ class Graph:
 
 	def order_nodes(self,net_nodes):#a.insert(posizione,valore)
 		ordered_nodes = []
+		node_leaf = []
+		
+		#aggiungo i root
+		for r in self.roots:
+			ordered_nodes.append(self.nodes[r])
+			net_nodes.remove(self.nodes[r])	
 
+		#estrapolo le foglie
 		for node in net_nodes:
-			if node.var.name in self.roots or len(ordered_nodes) == 0: #se sei root o tanto comunque la lista degli ordinati è vuota, mettiti in testa
-				ordered_nodes.insert(0,node)
-			else:		
-				for i in range(0,len(ordered_nodes)):
-					if node.var.name not in self.graph or len(ordered_nodes) == i+1: #se non è nel grafo, o sono arrivato alla fine significa che è una foglia, aggiungo in coda
-						ordered_nodes.append(node)
-						break
-					else:
-						parents = list(node.parents)
-						if ordered_nodes[i].var.name in parents: #se incontro un mio parents elimino quel parents dalla lista
-							parents.remove(ordered_nodes[i].var.name)
-						
-						if (ordered_nodes[i+1].var.name in self.graph[node.var.name]) or not parents: #se becco un mio figlio o ho passato tutti i miei parents mi aggiungo in quel punto
-							ordered_nodes.insert(i+1,node)
-							break
+			if not node.var.name in self.graph:
+				node_leaf.append(node)
+				net_nodes.remove(node)
 
-		print("ordine topologico")
-		for o in ordered_nodes:
-			print(o.var.name)
+		#aggiungo i nodi intermedi
+		while net_nodes: #finché non ho svuotato tutto net_nodes
+			for node in net_nodes:
+				if not node.var.name in self.roots:
+					if all([self.nodes[p] in ordered_nodes for p in node.parents]): #se tutti i padri del nodo sono gia nella rete
+						ordered_nodes.append(node)
+						net_nodes.remove(node)
+
+		#riaggiungo le foglie
+		ordered_nodes += node_leaf
+		 
 		return ordered_nodes,self.nodes

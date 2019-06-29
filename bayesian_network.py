@@ -20,16 +20,15 @@ class BayesNet:
     
 	def mpe(self,evidences):
 		self.set_evidence(evidences)
-		maxed_node = None
+		
+		factors = []
 		for node in reversed(self.nodes):
-			if maxed_node: #if maxed_out is not null
-				node.pointwise_product(maxed_node)
-			node.max_out()
-			maxed_node = node
-
+			factors.append(node.cpt)
+			factors = self.max_out_factor(node, factors) 
+		
 		print("Evidences: ", evidences)
-		self.retropropagate_assignments(maxed_node.cpt)
-
+		self.retropropagate_assignments(factors[0])
+		
 			
 	def retropropagate_assignments(self,cpt_last_node):
 		history = CPT()
