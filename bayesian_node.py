@@ -12,9 +12,7 @@ class BayesNode:
 		self.parents = parents
 		self.cpt = cpt
 		self.factor = cpt
-	
-	def set_node_evidence(self,ass):
-		self.cpt.set_evidence(self.var.name, ass)
+
 
 	def print(self):
 		print("\n var: ", self.var.name)
@@ -29,6 +27,5 @@ class BayesNode:
 	
 	def pointwise_product(self,other_factor):
 		self.cpt = self.cpt.pointwise_product(other_factor.factor) 
-	
 	
 	

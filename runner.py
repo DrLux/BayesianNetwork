@@ -110,7 +110,7 @@ class Menu:
 				for n in range(0,i):
 					self.network.remove_node(self.network.nodes[-1])
 				start_time = time.time()
-				self.network.mpe(self.evidences)
+				self.network.mpe(self.evidences,True)
 				x_axis.append(len(self.network.nodes)) 
 				y_axis.append(time.time() - start_time)
 
@@ -128,7 +128,7 @@ class Menu:
 				for m in range(0,int(len(self.network.nodes)/2)):
 					self.selected_map_vars.append(self.network.nodes[m])
 				start_time = time.time()
-				self.network.map(self.evidences,self.selected_map_vars) 
+				self.network.map(self.evidences,self.selected_map_vars,True) 
 				y_axis.append(time.time() - start_time)
 			
 				self.network = load_net(self.path)
@@ -145,7 +145,7 @@ class Menu:
 				for n in range(0,i):
 					self.evidences[self.network.nodes[n].var.name] = self.network.nodes[n].var.domain[0]
 				start_time = time.time()
-				self.network.mpe(self.evidences)
+				self.network.mpe(self.evidences,True)
 				x_axis.append(len(self.evidences)) 
 				y_axis.append(time.time() - start_time)
 
@@ -156,17 +156,17 @@ class Menu:
 			#MAP Evidences
 			x_axis = []
 			y_axis = []
-			self.selected_map_vars = []
 			self.evidences.clear()
 			
 			for i in range(0, len(self.network.nodes)):
+				self.selected_map_vars = []
 				print("Iterazione numero ",i)
 				for n in range(0,i):
 					self.evidences[self.network.nodes[n].var.name] = self.network.nodes[n].var.domain[0]
 				for m in range(0,int(len(self.network.nodes)/2)):
-					self.selected_map_vars.append(self.network.nodes[m])
+					self.selected_map_vars.append(self.network.nodes[m].var.name)
 				start_time = time.time()
-				self.network.map(self.evidences,self.selected_map_vars)
+				self.network.map(self.evidences,self.selected_map_vars,True)
 				x_axis.append(len(self.evidences)) 
 				y_axis.append(time.time() - start_time)
 
@@ -178,6 +178,7 @@ class Menu:
 			x_axis = []
 			y_axis = []
 			self.evidences.clear()
+      
 			
 			for i in range(2, len(self.network.nodes)):
 				self.selected_map_vars = []
@@ -185,7 +186,7 @@ class Menu:
 				for m in range(1,i):
 					self.selected_map_vars.append(self.network.nodes[m])
 				start_time = time.time()
-				self.network.map(self.evidences,self.selected_map_vars)
+				self.network.map(self.evidences,self.selected_map_vars, True)
 				x_axis.append(len(self.selected_map_vars)) 
 				y_axis.append(time.time() - start_time)
 

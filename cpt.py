@@ -18,12 +18,6 @@ class CPT:
 		for ass,value in self.cpt.items():
 			print(ass," -> ",value)
 		
-	#supporta una sola variabile e un solo valore
-	def set_evidence(self,var,ass):
-		index = self.vars.index(var)
-		for key,value in self.cpt.items():	
-			if key[index] != ass:
-				self.cpt[key] = 0.0
 
 	def max_out(self,target):
 		if DEBUG:
