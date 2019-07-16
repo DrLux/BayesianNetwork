@@ -3,9 +3,14 @@ from bayesian_node import *
 class BayesNet:
 	def __init__(self, variables, nodes, dict_nodes):
 		self.nodes = nodes # node
-		self.variables = variables # string
+		self.variables = variables # node.var
 		self.dict_nodes = dict_nodes # string -> node
 	
+	def remove_node(self, node):
+		self.nodes.remove(node)
+		self.variables.remove(node.var)
+		del self.dict_nodes[node.var.name]
+
 	def print(self):
 		for node in self.nodes:
 			node.print()
@@ -26,8 +31,8 @@ class BayesNet:
 			factors.append(node.cpt)
 			factors = self.max_out_factor(node, factors) 
 		
-		print("Evidences: ", evidences)
-		self.retropropagate_assignments(factors[0])
+		#print("Evidences: ", evidences)
+		#self.retropropagate_assignments(factors[0])
 		
 			
 	def retropropagate_assignments(self,cpt_last_node):
@@ -84,9 +89,11 @@ class BayesNet:
 			else:
 				self.nodes.remove(node)
 		
-		print("Evidences: ", evidences)
-		print("Map var: ", vars_to_preserve)
-		self.retropropagate_assignments(factors[0])
+		#print("Evidences: ", evidences)
+		#print("Map var: " )
+		#for v in vars_to_preserve:
+		#	print(v.var.name)
+		#self.retropropagate_assignments(factors[0])
 		
 
 	def make_factor(self,cpt,evidences):

@@ -1,0 +1,129 @@
+MAP
+
+Dimensione: ALARM
+map vars:  18
+--- 2.8138601779937744 seconds ---
+map vars:  18
+--- 2.7772440910339355 seconds ---
+map vars:  17
+--- 2.656959056854248 seconds ---
+map vars:  17
+--- 2.81579327583313 seconds ---
+map vars:  16
+--- 2.2802536487579346 seconds ---
+map vars:  16
+--- 2.133610963821411 seconds ---
+map vars:  15
+--- 1.0379579067230225 seconds ---
+map vars:  15
+--- 1.0222227573394775 seconds ---
+map vars:  14
+--- 1.0572998523712158 seconds ---
+map vars:  14
+--- 0.27567172050476074 seconds ---
+map vars:  13
+--- 0.17450499534606934 seconds ---
+map vars:  13
+--- 0.1296532154083252 seconds ---
+map vars:  12
+--- 0.020969390869140625 seconds ---
+map vars:  12
+--- 0.009975910186767578 seconds ---
+map vars:  11
+--- 0.010656356811523438 seconds ---
+map vars:  11
+--- 0.003992557525634766 seconds ---
+map vars:  10
+--- 0.005020856857299805 seconds ---
+map vars:  10
+--- 0.002991199493408203 seconds ---
+map vars:  9
+--- 0.0009963512420654297 seconds ---
+map vars:  9
+--- 0.00014925003051757812 seconds ---
+map vars:  8
+--- 0.0019643306732177734 seconds ---
+map vars:  8
+--- 0.0019991397857666016 seconds ---
+map vars:  7
+--- 0.0009706020355224609 seconds ---
+map vars:  7
+--- 0.000579833984375 seconds ---
+map vars:  6
+--- 0.0 seconds ---
+map vars:  6
+--- 0.0009717941284179688 seconds ---
+map vars:  5
+--- 0.0 seconds ---
+map vars:  5
+--- 0.0009963512420654297 seconds ---
+map vars:  4
+--- 0.0009968280792236328 seconds ---
+map vars:  4
+--- 0.0009701251983642578 seconds ---
+map vars:  3
+--- 0.0011801719665527344 seconds ---
+map vars:  3
+--- 0.0 seconds ---
+map vars:  2
+--- 0.00045752525329589844 seconds ---
+map vars:  2
+--- 0.0010044574737548828 seconds ---
+map vars:  1
+--- 0.0 seconds ---
+map vars:  1
+--- 0.0 seconds ---
+map vars:  0
+variables:  1
+--- 0.0006511211395263672 seconds ---
+
+
+Dimension child 
+map vars:  10
+--- 0.039293527603149414 seconds ---
+map vars:  9
+--- 0.03393816947937012 seconds ---
+map vars:  9
+--- 0.0341639518737793 seconds ---
+map vars:  8
+--- 0.034903764724731445 seconds ---
+map vars:  8
+--- 0.033034563064575195 seconds ---
+map vars:  7
+--- 0.015950918197631836 seconds ---
+map vars:  7
+--- 0.017980575561523438 seconds ---
+map vars:  6
+--- 0.014963865280151367 seconds ---
+map vars:  6
+--- 0.005994558334350586 seconds ---
+map vars:  5
+--- 0.0029921531677246094 seconds ---
+map vars:  5
+--- 0.0019943714141845703 seconds ---
+map vars:  4
+--- 0.0029916763305664062 seconds ---
+map vars:  4
+--- 0.0009982585906982422 seconds ---
+map vars:  3
+--- 0.0 seconds ---
+map vars:  3
+--- 0.0009965896606445312 seconds ---
+map vars:  2
+--- 0.0032553672790527344 seconds ---
+map vars:  2
+--- 0.0 seconds ---
+map vars:  1
+--- 0.0 seconds ---
+map vars:  1
+--- 0.0013141632080078125 seconds ---
+map vars:  0
+variables:  1
+--- 0.0009932518005371094 seconds ---
+
+
+Politree con insurance con 13 var:
+What you want to do?3
+variables:  27
+Choose one MAP variables:0
+--- 191.35412907600403 seconds ---

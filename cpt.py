@@ -108,4 +108,3 @@ class CPT:
 					best_ass = ass[self.vars.index(node_name)] #prendo sempre il primo valore, ovvero del nodo corrente
 					best_value = val
 		return best_ass
-

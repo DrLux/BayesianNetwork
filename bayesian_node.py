@@ -31,3 +31,4 @@ class BayesNode:
 		self.cpt = self.cpt.pointwise_product(other_factor.factor) 
 	
 	
+	

@@ -1,0 +1,127 @@
+MPE
+
+Dimensione: ALARM
+variables:  37
+--- 2.7766337394714355 seconds ---
+variables:  36
+--- 2.760622262954712 seconds ---
+variables:  35
+--- 2.5542871952056885 seconds ---
+variables:  34
+--- 2.490807294845581 seconds ---
+variables:  33
+--- 2.086224317550659 seconds ---
+variables:  32
+--- 2.1353018283843994 seconds ---
+variables:  31
+--- 1.0237722396850586 seconds ---
+variables:  30
+--- 1.3319461345672607 seconds ---
+variables:  29
+--- 1.0235669612884521 seconds ---
+variables:  28
+--- 0.25490808486938477 seconds ---
+variables:  27
+--- 0.1252145767211914 seconds ---
+variables:  26
+--- 0.12595033645629883 seconds ---
+variables:  25
+--- 0.01897573471069336 seconds ---
+variables:  24
+--- 0.012859582901000977 seconds ---
+variables:  23
+--- 0.008971214294433594 seconds ---
+variables:  22
+--- 0.004984378814697266 seconds ---
+variables:  21
+--- 0.004982471466064453 seconds ---
+variables:  20
+--- 0.0029866695404052734 seconds ---
+variables:  19
+--- 0.0009615421295166016 seconds ---
+variables:  18
+--- 0.0 seconds ---
+variables:  17
+--- 0.0009555816650390625 seconds ---
+variables:  16
+--- 0.0 seconds ---
+variables:  15
+--- 0.0 seconds ---
+variables:  14
+--- 0.0009324550628662109 seconds ---
+variables:  13
+--- 0.0007932186126708984 seconds ---
+variables:  12
+--- 0.0 seconds ---
+variables:  11
+--- 0.001998424530029297 seconds ---
+variables:  10
+--- 0.0 seconds ---
+variables:  9
+--- 0.0009987354278564453 seconds ---
+variables:  8
+--- 0.0 seconds ---
+variables:  7
+--- 0.0009975433349609375 seconds ---
+variables:  6
+--- 0.0 seconds ---
+variables:  5
+--- 0.0 seconds ---
+variables:  4
+--- 0.002124786376953125 seconds ---
+variables:  3
+--- 0.0009970664978027344 seconds ---
+variables:  2
+--- 0.0 seconds ---
+variables:  1
+--- 0.0019087791442871094 seconds ---
+
+
+DIMENSIONE child:
+What you want to do?5
+variables:  20
+--- 0.03491401672363281 seconds ---
+variables:  19
+--- 0.03451871871948242 seconds ---
+variables:  18
+--- 0.03390622138977051 seconds ---
+variables:  17
+--- 0.034905433654785156 seconds ---
+variables:  16
+--- 0.033887624740600586 seconds ---
+variables:  15
+--- 0.014954328536987305 seconds ---
+variables:  14
+--- 0.01820969581604004 seconds ---
+variables:  13
+--- 0.01496267318725586 seconds ---
+variables:  12
+--- 0.0049877166748046875 seconds ---
+variables:  11
+--- 0.004007101058959961 seconds ---
+variables:  10
+--- 0.0036482810974121094 seconds ---
+variables:  9
+--- 0.0020363330841064453 seconds ---
+variables:  8
+--- 0.0020263195037841797 seconds ---
+variables:  7
+--- 0.0009965896606445312 seconds ---
+variables:  6
+--- 0.0005230903625488281 seconds ---
+variables:  5
+--- 0.0005862712860107422 seconds ---
+variables:  4
+--- 0.0009968280792236328 seconds ---
+variables:  3
+--- 0.003949642181396484 seconds ---
+variables:  2
+--- 0.0 seconds ---
+variables:  1
+--- 0.0 seconds ---
+
+
+Politree con insurance:
+What you want to do?3
+variables:  27
+--- 202.4634861946106 seconds ---
