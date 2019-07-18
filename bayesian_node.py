@@ -26,6 +26,4 @@ class BayesNode:
 		self.factor = self.cpt.max_out(self.var.name)
 	
 	def pointwise_product(self,other_factor):
-		self.cpt = self.cpt.pointwise_product(other_factor.factor) 
-	
-	
+		self.cpt = self.cpt.pointwise_product(other_factor.factor) 	

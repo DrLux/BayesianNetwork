@@ -117,10 +117,11 @@ class Menu:
 				self.network = load_net(self.path)
 			self.plot_data(x_axis,y_axis,"Dimension","Execution Time", "MPE")
 
-      #MAP DIMENSION
+			#MAP DIMENSION
 			x_axis = []
 			y_axis = []
 			for i in range(0, len(self.network.nodes)):
+				print("Iterazione numero ",i)
 				self.selected_map_vars = []
 				for n in range(0,i):
 					self.network.remove_node(self.network.nodes[-1])
@@ -174,7 +175,7 @@ class Menu:
 			self.plot_data(x_axis,y_axis,"Evidences","Execution Time", "MAP")
       
 		elif main_choice == '7':
-      #MAP Evidences
+			#MAP Evidences
 			x_axis = []
 			y_axis = []
 			self.evidences.clear()
@@ -191,7 +192,8 @@ class Menu:
 				y_axis.append(time.time() - start_time)
 
 				self.network = load_net(self.path)
-			self.plot_data(x_axis,y_axis,"Map Vars","Execution Time", "MAP")
+
+			self.plot_data(x_axis,y_axis,"Map Vars","Execution Time","MAP VARS")
 
 
 

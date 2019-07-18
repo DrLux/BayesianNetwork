@@ -3,7 +3,7 @@ from bayesian_node import *
 class BayesNet:
   def __init__(self, variables, nodes, dict_nodes):
     self.nodes = nodes # node
-    self.variables = variables # node.var
+    self.variables = variables #string
     self.dict_nodes = dict_nodes # string -> node
 
   def remove_node(self, node):
@@ -26,7 +26,6 @@ class BayesNet:
       if node.var.name not in evidences: 
         factors = self.max_out_factor(node, factors)
         
-    
     result = factors[0]
     for i in range (1, len(factors)):
       result = result.pointwise_product(factors[i])
@@ -45,6 +44,7 @@ class BayesNet:
       history.cpt[name] = ass
     
     for i in range(0,len(self.nodes)):
+      #print(self.nodes[i].print())
       if (i == 0):
         best_ass = self.nodes[i].cpt.best_ass_for_node_var(None,None,self.nodes[i].var.name)
         history.cpt[self.nodes[i].var.name] = best_ass
@@ -62,14 +62,10 @@ class BayesNet:
     history.print("Best assignments")
 
   def map(self,evidences,mapvars, is_bench = False):
-    if not mapvars:
-      self.mpe(evidences)
-
     map_vars = set()
     for mv in mapvars:
       if mv not in evidences:
         map_vars.add(mv) 
-    
 
     factors = []
     for node in reversed(self.nodes):
@@ -80,17 +76,17 @@ class BayesNet:
     for node in reversed(self.nodes):
       if node.var.name not in evidences and node.var.name in map_vars:
         factors = self.max_out_factor(node, factors)
+      else:
+        self.nodes.remove(node)
     
     result = factors[0]
     for i in range (1, len(factors)):
       result = result.pointwise_product(factors[i])
 
     if not is_bench:
-      print("Map var: " )
-      for v in map_vars:
-        print(v)
+      print("Map var: ",map_vars)
       self.retropropagate_assignments(result,evidences)
-
+      
 
   def make_factor(self,cpt,evidences):
     factor = cpt
