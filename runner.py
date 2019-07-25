@@ -2,6 +2,7 @@ import time
 import os 
 from os.path import isfile, join
 import matplotlib.pyplot as plt
+import bn_parser.py
 # sito dove scaricare le reti: '''http://www.bnlearn.com/bnrepository/
 
 class Menu:
@@ -10,7 +11,7 @@ class Menu:
 
 	def load_network(self):
 		print("Loading network...")
-		networs_path = join(os.getcwd(), "BayesianNetwork/networks")
+		networs_path = join(os.getcwd(), "networks")
 		available_networks = os.listdir(networs_path)
 
 		print('\n List of available networks: ')
@@ -96,9 +97,9 @@ class Menu:
 			self.network = load_net(self.path)
 			self.main_menu()
 		elif main_choice == '4':
-			start_time = time.time()
 			self.selected_map_vars = []
 			self.select_map_var()
+			start_time = time.time()
 			self.network.map(self.evidences,self.selected_map_vars)
 			print("--- %s seconds ---" % (time.time() - start_time))
 		elif main_choice == '5':
